@@ -1,14 +1,18 @@
-const jwt = require('jsonwebtoken');
-const sql = require('../db');
+import jwt from 'jsonwebtoken';
+import sql from '../db';
+import { getToken } from './jwt';
+
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET is not set');
 
 const verifyToken = async (request: Request) => {
-  const authHeader = request.headers.get('Authorization');
-  const token = authHeader?.split(' ')[1];
-
+  const token = getToken(request);
   if (!token) throw new Error('Access denied');
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (!decoded) throw new Error('Invalid token');
+
     const usedJwt = await sql`
     SELECT 1 FROM blacklisted_jwts WHERE jwt = ${token}
     `
@@ -20,4 +24,4 @@ const verifyToken = async (request: Request) => {
   }
 };
 
-module.exports = verifyToken;
+export default verifyToken;
