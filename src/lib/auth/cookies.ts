@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers';
 
-const COOKIE_NAME = 'auth_token';
-if (!COOKIE_NAME) throw new Error('COOKIE_NAME is not set');
+export const COOKIE_NAME = 'auth_token';
 
 export const getAuthCookieOptions = (maxAgeSeconds = 3600) => {
   return {

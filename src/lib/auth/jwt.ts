@@ -1,9 +1,20 @@
 import jwt from 'jsonwebtoken';
+import { COOKIE_NAME } from './cookies';
 
 export const getToken = (request: Request) => {
   const authHeader = request.headers.get('Authorization');
-  const token = authHeader?.split(' ')[1];
-  return token;
+  const bearerToken = authHeader?.split(' ')[1];
+  if (bearerToken) return bearerToken;
+
+  const cookieHeader = request.headers.get('cookie');
+  if (!cookieHeader) return undefined;
+
+  const match = cookieHeader
+    .split(';')
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(`${COOKIE_NAME}=`));
+
+  return match?.slice(COOKIE_NAME.length + 1);
 };
 
 export const createToken = (userId: string) => {
