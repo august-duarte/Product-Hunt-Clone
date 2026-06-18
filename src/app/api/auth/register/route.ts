@@ -1,7 +1,7 @@
 import sql from "@/lib/db";
 import { registerValidation } from "@/lib/validation";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import { hashPassword } from "@/lib/auth/hash-password";
 
 export const POST = async (req: Request) => {
   try {
@@ -12,8 +12,7 @@ export const POST = async (req: Request) => {
 
     const { name, email, password } = await req.json();
 
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await hashPassword(password);
 
     const emailExists = await sql`
       SELECT * FROM users WHERE email = ${email}

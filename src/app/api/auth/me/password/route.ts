@@ -1,7 +1,7 @@
 import sql from "@/lib/db";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
 import verifyToken from "@/lib/auth/verify-token";
+import { comparePassword, hashPassword } from "@/lib/auth/hash-password";
 
 export const PATCH = async (req: Request) => {
   try {
@@ -14,12 +14,12 @@ export const PATCH = async (req: Request) => {
     `;
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    const validOldPassword = await bcrypt.compare(oldPassword, user.password);
+    const validOldPassword = await comparePassword(oldPassword, user.password);
     if (!validOldPassword) {
       return NextResponse.json({ error: 'Invalid old password' }, { status: 400 });
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const hashedNewPassword = await hashPassword(newPassword);
     await sql`
       UPDATE users SET password = ${hashedNewPassword}
       WHERE id = ${id}

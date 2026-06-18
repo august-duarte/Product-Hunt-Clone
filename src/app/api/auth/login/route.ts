@@ -1,8 +1,8 @@
 import sql from "@/lib/db";
 import { loginValidation } from "@/lib/validation";
-import bcrypt from "bcrypt";
 import { createToken } from "@/lib/auth/jwt";
 import { NextResponse } from "next/server";
+import { comparePassword } from "@/lib/auth/hash-password";
 
 export const POST = async (req: Request) => {
   try {
@@ -19,9 +19,9 @@ export const POST = async (req: Request) => {
     if (!user) {
       return NextResponse.json({ error: 'User doesn\'t exist. Please check your email and password.' }, { status: 400 })
     }
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await comparePassword(password, user.password);
 
-    if (validPassword === false) {
+    if (!validPassword) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 400 })
     }
     
