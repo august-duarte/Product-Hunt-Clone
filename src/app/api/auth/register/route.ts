@@ -5,12 +5,13 @@ import { hashPassword } from "@/lib/auth/hash-password";
 
 export const POST = async (req: Request) => {
   try {
-    const { error } = registerValidation(await req.json());
+    const body = await req.json();
+    const { error } = registerValidation(body);
     if (error) {
       return NextResponse.json({ error: error.details[0].message }, { status: 400 })
     }
 
-    const { name, email, password } = await req.json();
+    const { name, email, password } = body;
 
     const hashedPassword = await hashPassword(password);
 

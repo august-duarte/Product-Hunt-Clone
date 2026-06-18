@@ -2,13 +2,21 @@ import sql from "@/lib/db";
 import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
 import { comparePassword, hashPassword } from "@/lib/auth/hash-password";
+import { updatePasswordValidation } from "@/lib/validation";
 
 export const PATCH = async (req: Request) => {
   try {
     const decoded = await verifyToken(req);
     const id = (decoded as { id: number }).id;
-    const { oldPassword, newPassword } = await req.json();
-
+    const body = await req.json();
+    const { error } = updatePasswordValidation(body);
+    if (error) {
+      return NextResponse.json({ error: error.details[0].message }, { status: 400 });
+    }
+    const { oldPassword, newPassword } = body;
+    if (oldPassword === newPassword) {
+      return NextResponse.json({ error: 'New password cannot be the same as the old password' }, { status: 400 });
+    }
     const [user] = await sql`
       SELECT * FROM users WHERE id = ${id}
     `;

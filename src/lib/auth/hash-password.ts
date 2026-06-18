@@ -1,9 +1,14 @@
 import bcrypt from "bcrypt";
 
-export const hashPassword = async (password: string) => {
-  return await bcrypt.hash(password, 10);
+const BCRYPT_SALT_ROUNDS = 10;
+
+// Valid bcrypt hash used when no user exists (timing-safe login).
+export const DUMMY_PASSWORD_HASH =
+  "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi";
+export const hashPassword = (password: string) => {
+  return bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 };
 
-export const comparePassword = async (password: string, hashedPassword: string) => {
-  return await bcrypt.compare(password, hashedPassword);
+export const comparePassword = (password: string, hashedPassword: string) => {
+  return bcrypt.compare(password, hashedPassword);
 };
