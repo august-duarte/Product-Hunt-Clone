@@ -3,6 +3,7 @@ import { loginValidation } from "@/lib/validation";
 import { createToken } from "@/lib/auth/jwt";
 import { NextResponse } from "next/server";
 import { comparePassword, DUMMY_PASSWORD_HASH } from "@/lib/auth/hash-password";
+import { setAuthCookie } from "@/lib/auth/cookies";
 
 export const POST = async (req: Request) => {
   try {
@@ -26,7 +27,9 @@ export const POST = async (req: Request) => {
 
     const token = createToken(user.id);
 
-    return NextResponse.json({ token: token }, { status: 200 })
+    await setAuthCookie(token);
+
+    return NextResponse.json({ message: 'Login successful' }, { status: 200 })
   } catch (error) {
     console.error('Login failed', error);
     return NextResponse.json({ error: 'Something went wrong, please try again later' }, { status: 500 })
