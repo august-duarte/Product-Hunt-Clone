@@ -2,6 +2,15 @@ import sql from "@/lib/db";
 import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
 import { updateProfileValidation } from "@/lib/validations/profiles";
+import {
+  emailAlreadyExists,
+  internalServerError,
+  notFound,
+  unauthorized,
+  validationError,
+} from "@/lib/api/responses";
+
+const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
 
 export const GET = async (req: Request) => {
   try {
@@ -12,14 +21,14 @@ export const GET = async (req: Request) => {
       SELECT id, name, email, created_at FROM users WHERE id = ${id}
     `;
 
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && ['Access denied', 'Invalid token', 'Token already used'].includes(error.message)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (error instanceof Error && AUTH_ERRORS.includes(error.message)) {
+      return unauthorized();
     }
     console.error('Get profile failed', error);
-    return NextResponse.json({ error: 'Something went wrong, please try again later' }, { status: 500 });
+    return internalServerError();
   }
 };
 
@@ -31,7 +40,7 @@ export const PATCH = async (req: Request) => {
 
     const { error } = updateProfileValidation(body);
     if (error) {
-      return NextResponse.json({ error: error.details[0].message }, { status: 400 });
+      return validationError(error.details[0].message);
     }
 
     const { name, email } = body;
@@ -41,7 +50,7 @@ export const PATCH = async (req: Request) => {
         SELECT * FROM users WHERE email = ${email} AND id != ${id}
       `;
       if (emailExists.length > 0) {
-        return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
+        return emailAlreadyExists();
       }
     }
 
@@ -67,13 +76,13 @@ export const PATCH = async (req: Request) => {
       `;
     }
 
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && ['Access denied', 'Invalid token', 'Token already used'].includes(error.message)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (error instanceof Error && AUTH_ERRORS.includes(error.message)) {
+      return unauthorized();
     }
     console.error('Information update failed', error);
-    return NextResponse.json({ error: 'Something went wrong, please try again later' }, { status: 500 });
+    return internalServerError();
   }
 };

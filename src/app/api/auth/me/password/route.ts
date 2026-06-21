@@ -3,6 +3,16 @@ import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
 import { comparePassword, hashPassword } from "@/lib/auth/hash-password";
 import { updatePasswordValidation } from "@/lib/validations/profiles";
+import {
+  internalServerError,
+  invalidOldPassword,
+  notFound,
+  samePassword,
+  unauthorized,
+  validationError,
+} from "@/lib/api/responses";
+
+const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
 
 export const PATCH = async (req: Request) => {
   try {
@@ -11,20 +21,20 @@ export const PATCH = async (req: Request) => {
     const body = await req.json();
     const { error } = updatePasswordValidation(body);
     if (error) {
-      return NextResponse.json({ error: error.details[0].message }, { status: 400 });
+      return validationError(error.details[0].message);
     }
     const { oldPassword, newPassword } = body;
     if (oldPassword === newPassword) {
-      return NextResponse.json({ error: 'New password cannot be the same as the old password' }, { status: 400 });
+      return samePassword();
     }
     const [user] = await sql`
       SELECT * FROM users WHERE id = ${id}
     `;
-    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!user) return notFound();
 
     const validOldPassword = await comparePassword(oldPassword, user.password);
     if (!validOldPassword) {
-      return NextResponse.json({ error: 'Invalid old password' }, { status: 400 });
+      return invalidOldPassword();
     }
 
     const hashedNewPassword = await hashPassword(newPassword);
@@ -35,10 +45,10 @@ export const PATCH = async (req: Request) => {
 
     return NextResponse.json({ message: 'Password updated successfully' }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && ['Access denied', 'Invalid token', 'Token already used'].includes(error.message)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (error instanceof Error && AUTH_ERRORS.includes(error.message)) {
+      return unauthorized();
     }
     console.error('Password update failed', error);
-    return NextResponse.json({ error: 'Something went wrong, please try again later' }, { status: 500 });
+    return internalServerError();
   }
 };
