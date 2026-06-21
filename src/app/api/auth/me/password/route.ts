@@ -2,7 +2,7 @@ import sql from "@/lib/db";
 import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
 import { comparePassword, hashPassword } from "@/lib/auth/hash-password";
-import { updatePasswordValidation } from "@/lib/validation";
+import { updatePasswordValidation } from "@/lib/validations/profiles";
 
 export const PATCH = async (req: Request) => {
   try {

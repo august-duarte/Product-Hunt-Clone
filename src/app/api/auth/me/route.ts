@@ -1,7 +1,7 @@
 import sql from "@/lib/db";
 import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
-import { updateProfileValidation } from "@/lib/validation";
+import { updateProfileValidation } from "@/lib/validations/profiles";
 
 export const GET = async (req: Request) => {
   try {

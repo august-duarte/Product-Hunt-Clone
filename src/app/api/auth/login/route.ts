@@ -1,5 +1,5 @@
 import sql from "@/lib/db";
-import { loginValidation } from "@/lib/validation";
+import { loginValidation } from "@/lib/validations/auth";
 import { createToken } from "@/lib/auth/jwt";
 import { NextResponse } from "next/server";
 import { comparePassword, DUMMY_PASSWORD_HASH } from "@/lib/auth/hash-password";

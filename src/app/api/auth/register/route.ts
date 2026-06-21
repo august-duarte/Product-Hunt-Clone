@@ -1,5 +1,5 @@
 import sql from "@/lib/db";
-import { registerValidation } from "@/lib/validation";
+import { registerValidation } from "@/lib/validations/auth";
 import { NextResponse } from "next/server";
 import { hashPassword } from "@/lib/auth/hash-password";
 
