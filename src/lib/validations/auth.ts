@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 export const registerValidation = (data: any) => {
   const schema = Joi.object({
-    username: Joi.string().max(255).required(),
+    name: Joi.string().max(255).required(),
     email: Joi.string().email().max(255).required(),
     password: Joi.string().min(6).max(255).required(),
   });

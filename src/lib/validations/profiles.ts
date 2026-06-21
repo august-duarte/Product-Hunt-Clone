@@ -10,8 +10,8 @@ export const updatePasswordValidation = (data: any) => {
 
 export const updateProfileValidation = (data: any) => {
   const schema = Joi.object({
-    username: Joi.string().min(2).max(255),
+    name: Joi.string().min(2).max(255),
     email: Joi.string().email().max(255),
-  }).or('username', 'email');
+  }).or('name', 'email');
   return schema.validate(data);
 };
