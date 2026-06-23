@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import verifyToken from "@/lib/auth/verify-token";
 import { updateProfileValidation } from "@/lib/validations/profiles";
 import {
   emailAlreadyExists,
   internalServerError,
   notFound,
-  unauthorized,
   validationError,
 } from "@/lib/api/responses";
+import { withAuth } from "@/lib/api/with-auth";
 import {
   findPublicUserById,
   findUserByEmailExcludingId,
@@ -16,30 +15,20 @@ import {
   updateUserNameAndEmail,
 } from "@/lib/queries/users";
 
-const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
-
-export const GET = async (req: Request) => {
+export const GET = withAuth(async (_req, { id }) => {
   try {
-    const decoded = await verifyToken(req);
-    const id = (decoded as { id: number }).id;
-
     const user = await findPublicUserById(id);
 
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && AUTH_ERRORS.includes(error.message)) {
-      return unauthorized();
-    }
     console.error('Get profile failed', error);
     return internalServerError();
   }
-};
+});
 
-export const PATCH = async (req: Request) => {
+export const PATCH = withAuth(async (req, { id }) => {
   try {
-    const decoded = await verifyToken(req);
-    const id = (decoded as { id: number }).id;
     const body = await req.json();
 
     const { error } = updateProfileValidation(body);
@@ -69,10 +58,7 @@ export const PATCH = async (req: Request) => {
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && AUTH_ERRORS.includes(error.message)) {
-      return unauthorized();
-    }
     console.error('Information update failed', error);
     return internalServerError();
   }
-};
+});

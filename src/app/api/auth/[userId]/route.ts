@@ -1,23 +1,19 @@
 import { NextResponse } from "next/server";
-import verifyToken from "@/lib/auth/verify-token";
 import {
   forbidden,
   internalServerError,
   invalidUserId,
   notFound,
-  unauthorized,
 } from "@/lib/api/responses";
+import { withAuthParams } from "@/lib/api/with-auth";
 import { findPublicUserById, findUserIsAdmin } from "@/lib/queries/users";
 
-const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
-
-export const GET = async (
-  req: Request,
-  { params }: { params: Promise<{ userId: string }> }
+export const GET = withAuthParams<{ userId: string }>(async (
+  _req,
+  { id: currentUserId },
+  { params }
 ) => {
   try {
-    const decoded = await verifyToken(req);
-    const currentUserId = (decoded as { id: number }).id;
     const { userId } = await params;
     const requestedUserId = Number(userId);
 
@@ -37,10 +33,7 @@ export const GET = async (
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && AUTH_ERRORS.includes(error.message)) {
-      return unauthorized();
-    }
     console.error('Get user failed', error);
     return internalServerError();
   }
-};
+});
