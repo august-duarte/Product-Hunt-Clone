@@ -10,15 +10,16 @@ import {
 } from "@/lib/api/responses";
 import { withAuth } from "@/lib/api/with-auth";
 import { findUserById, updateUserPassword } from "@/lib/queries/users";
+import type { UpdatePasswordInput } from "@/types/user";
 
 export const PATCH = withAuth(async (req, { id }) => {
   try {
-    const body = await req.json();
-    const { error } = updatePasswordValidation(body);
+    const body: unknown = await req.json();
+    const { error, value } = updatePasswordValidation(body);
     if (error) {
       return validationError(error.details[0].message);
     }
-    const { oldPassword, newPassword } = body;
+    const { oldPassword, newPassword } = value as UpdatePasswordInput;
     if (oldPassword === newPassword) {
       return samePassword();
     }

@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import verifyToken from '@/lib/auth/verify-token';
 import { internalServerError, unauthorized } from '@/lib/api/responses';
+import type { AuthPayload } from '@/types/user';
 
-export type AuthPayload = { id: number };
+export type { AuthPayload };
 
 const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
 
@@ -18,8 +19,7 @@ type AuthedHandler = (
 export function withAuth(handler: AuthedHandler) {
   return async (request: Request) => {
     try {
-      const decoded = await verifyToken(request);
-      const auth = decoded as AuthPayload;
+      const auth = await verifyToken(request);
       return await handler(request, auth);
     } catch (error) {
       if (isAuthError(error)) return unauthorized();
@@ -44,8 +44,7 @@ export function withAuthParams<TParams extends Record<string, string> = Record<s
 ) {
   return async (request: Request, context: RouteContext<TParams>) => {
     try {
-      const decoded = await verifyToken(request);
-      const auth = decoded as AuthPayload;
+      const auth = await verifyToken(request);
       return await handler(request, auth, context);
     } catch (error) {
       if (isAuthError(error)) return unauthorized();

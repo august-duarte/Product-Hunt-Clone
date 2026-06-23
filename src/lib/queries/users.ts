@@ -1,77 +1,97 @@
 import sql from '@/lib/db';
+import type { PublicUser, User } from '@/types/user';
 
-export const findUserByEmail = async (email: string) => {
+export const findUserByEmail = async (email: string): Promise<User | undefined> => {
   const [user] = await sql`
     SELECT * FROM users WHERE email = ${email}
   `;
-  return user;
+  return user as User | undefined;
 };
 
-export const findUserByEmailExcludingId = async (email: string, id: number) => {
+export const findUserByEmailExcludingId = async (
+  email: string,
+  id: number
+): Promise<User[]> => {
   const users = await sql`
     SELECT * FROM users WHERE email = ${email} AND id != ${id}
   `;
-  return users;
+  return users as User[];
 };
 
-export const createUser = async (name: string, email: string, password: string) => {
+export const createUser = async (
+  name: string,
+  email: string,
+  password: string
+): Promise<PublicUser> => {
   const [user] = await sql`
     INSERT INTO users (name, email, password)
     VALUES (${name}, ${email}, ${password})
     RETURNING id, name, email, created_at
   `;
-  return user;
+  return user as PublicUser;
 };
 
-export const findPublicUserById = async (id: number) => {
+export const findPublicUserById = async (id: number): Promise<PublicUser | undefined> => {
   const [user] = await sql`
     SELECT id, name, email, created_at FROM users WHERE id = ${id}
   `;
-  return user;
+  return user as PublicUser | undefined;
 };
 
-export const findUserById = async (id: number) => {
+export const findUserById = async (id: number): Promise<User | undefined> => {
   const [user] = await sql`
     SELECT * FROM users WHERE id = ${id}
   `;
-  return user;
+  return user as User | undefined;
 };
 
-export const findUserIsAdmin = async (id: number) => {
+export const findUserIsAdmin = async (
+  id: number
+): Promise<Pick<User, 'is_admin'> | undefined> => {
   const [user] = await sql`
     SELECT is_admin FROM users WHERE id = ${id}
   `;
-  return user;
+  return user as Pick<User, 'is_admin'> | undefined;
 };
 
-export const updateUserNameAndEmail = async (id: number, name: string, email: string) => {
+export const updateUserNameAndEmail = async (
+  id: number,
+  name: string,
+  email: string
+): Promise<PublicUser | undefined> => {
   const [user] = await sql`
     UPDATE users SET name = ${name}, email = ${email}
     WHERE id = ${id}
     RETURNING id, name, email, created_at
   `;
-  return user;
+  return user as PublicUser | undefined;
 };
 
-export const updateUserName = async (id: number, name: string) => {
+export const updateUserName = async (
+  id: number,
+  name: string
+): Promise<PublicUser | undefined> => {
   const [user] = await sql`
     UPDATE users SET name = ${name}
     WHERE id = ${id}
     RETURNING id, name, email, created_at
   `;
-  return user;
+  return user as PublicUser | undefined;
 };
 
-export const updateUserEmail = async (id: number, email: string) => {
+export const updateUserEmail = async (
+  id: number,
+  email: string
+): Promise<PublicUser | undefined> => {
   const [user] = await sql`
     UPDATE users SET email = ${email}
     WHERE id = ${id}
     RETURNING id, name, email, created_at
   `;
-  return user;
+  return user as PublicUser | undefined;
 };
 
-export const updateUserPassword = async (id: number, password: string) => {
+export const updateUserPassword = async (id: number, password: string): Promise<void> => {
   await sql`
     UPDATE users SET password = ${password}
     WHERE id = ${id}

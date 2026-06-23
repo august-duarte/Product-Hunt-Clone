@@ -1,16 +1,17 @@
 import jwt from 'jsonwebtoken';
 import sql from '../db';
 import { getToken } from './jwt';
+import type { AuthPayload } from '@/types/user';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) throw new Error('JWT_SECRET is not set');
 
-const verifyToken = async (request: Request) => {
+const verifyToken = async (request: Request): Promise<AuthPayload> => {
   const token = getToken(request);
   if (!token) throw new Error('Access denied');
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET) as AuthPayload;
     if (!decoded) throw new Error('Invalid token');
 
     const usedJwt = await sql`

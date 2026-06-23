@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-export const updatePasswordValidation = (data: any) => {
+export const updatePasswordValidation = (data: unknown) => {
   const schema = Joi.object({
     oldPassword: Joi.string().min(6).max(255).required(),
     newPassword: Joi.string().min(6).max(255).required(),
@@ -8,7 +8,7 @@ export const updatePasswordValidation = (data: any) => {
   return schema.validate(data);
 };
 
-export const updateProfileValidation = (data: any) => {
+export const updateProfileValidation = (data: unknown) => {
   const schema = Joi.object({
     name: Joi.string().min(2).max(255),
     email: Joi.string().email().max(255),

@@ -1,19 +1,18 @@
 import Joi from 'joi';
 
-export const registerValidation = (data: any) => {
+export const registerValidation = (data: unknown) => {
   const schema = Joi.object({
     name: Joi.string().max(255).required(),
     email: Joi.string().email().max(255).required(),
     password: Joi.string().min(6).max(255).required(),
   });
   return schema.validate(data);
-}
+};
 
-export const loginValidation = (data: any) => {
+export const loginValidation = (data: unknown) => {
   const schema = Joi.object({
     email: Joi.string().email().max(255).required(),
     password: Joi.string().min(6).max(255).required(),
   });
   return schema.validate(data);
-}
-
+};

@@ -14,6 +14,7 @@ import {
   updateUserName,
   updateUserNameAndEmail,
 } from "@/lib/queries/users";
+import type { PublicUser, UpdateProfileInput } from "@/types/user";
 
 export const GET = withAuth(async (_req, { id }) => {
   try {
@@ -29,14 +30,13 @@ export const GET = withAuth(async (_req, { id }) => {
 
 export const PATCH = withAuth(async (req, { id }) => {
   try {
-    const body = await req.json();
-
-    const { error } = updateProfileValidation(body);
+    const body: unknown = await req.json();
+    const { error, value } = updateProfileValidation(body);
     if (error) {
       return validationError(error.details[0].message);
     }
 
-    const { name, email } = body;
+    const { name, email } = value as UpdateProfileInput;
 
     if (email) {
       const emailExists = await findUserByEmailExcludingId(email, id);
@@ -45,7 +45,7 @@ export const PATCH = withAuth(async (req, { id }) => {
       }
     }
 
-    let user;
+    let user: PublicUser | undefined;
 
     if (name && email) {
       user = await updateUserNameAndEmail(id, name, email);

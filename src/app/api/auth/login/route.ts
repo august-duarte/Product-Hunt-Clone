@@ -9,16 +9,17 @@ import {
   validationError,
 } from "@/lib/api/responses";
 import { findUserByEmail } from "@/lib/queries/users";
+import type { LoginInput } from "@/types/user";
 
 export const POST = async (req: Request) => {
   try {
-    const body = await req.json();
-    const { error } = loginValidation(body);
+    const body: unknown = await req.json();
+    const { error, value } = loginValidation(body);
     if (error) {
       return validationError(error.details[0].message);
     }
 
-    const { email, password } = body;
+    const { email, password } = value as LoginInput;
 
     const user = await findUserByEmail(email);
 
@@ -28,7 +29,7 @@ export const POST = async (req: Request) => {
       return invalidEmailOrPassword();
     }
 
-    const token = createToken(user.id);
+    const token = createToken(String(user.id));
 
     await setAuthCookie(token);
 

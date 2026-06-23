@@ -9,16 +9,17 @@ import {
   validationError,
 } from "@/lib/api/responses";
 import { createUser, findUserByEmail } from "@/lib/queries/users";
+import type { RegisterInput } from "@/types/user";
 
 export const POST = async (req: Request) => {
   try {
-    const body = await req.json();
-    const { error } = registerValidation(body);
+    const body: unknown = await req.json();
+    const { error, value } = registerValidation(body);
     if (error) {
       return validationError(error.details[0].message);
     }
 
-    const { name, email, password } = body;
+    const { name, email, password } = value as RegisterInput;
 
     const hashedPassword = await hashPassword(password);
 
@@ -36,4 +37,4 @@ export const POST = async (req: Request) => {
     console.error('Register failed', error);
     return internalServerError();
   }
-}
+};
