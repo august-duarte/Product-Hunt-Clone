@@ -1,4 +1,3 @@
-import sql from "@/lib/db";
 import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
 import { comparePassword, hashPassword } from "@/lib/auth/hash-password";
@@ -11,6 +10,7 @@ import {
   unauthorized,
   validationError,
 } from "@/lib/api/responses";
+import { findUserById, updateUserPassword } from "@/lib/queries/users";
 
 const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
 
@@ -27,9 +27,7 @@ export const PATCH = async (req: Request) => {
     if (oldPassword === newPassword) {
       return samePassword();
     }
-    const [user] = await sql`
-      SELECT * FROM users WHERE id = ${id}
-    `;
+    const user = await findUserById(id);
     if (!user) return notFound();
 
     const validOldPassword = await comparePassword(oldPassword, user.password);
@@ -38,10 +36,7 @@ export const PATCH = async (req: Request) => {
     }
 
     const hashedNewPassword = await hashPassword(newPassword);
-    await sql`
-      UPDATE users SET password = ${hashedNewPassword}
-      WHERE id = ${id}
-    `;
+    await updateUserPassword(id, hashedNewPassword);
 
     return NextResponse.json({ message: 'Password updated successfully' }, { status: 200 });
   } catch (error) {

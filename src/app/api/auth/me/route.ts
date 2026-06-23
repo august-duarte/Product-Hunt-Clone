@@ -1,4 +1,3 @@
-import sql from "@/lib/db";
 import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
 import { updateProfileValidation } from "@/lib/validations/profiles";
@@ -9,6 +8,13 @@ import {
   unauthorized,
   validationError,
 } from "@/lib/api/responses";
+import {
+  findPublicUserById,
+  findUserByEmailExcludingId,
+  updateUserEmail,
+  updateUserName,
+  updateUserNameAndEmail,
+} from "@/lib/queries/users";
 
 const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
 
@@ -17,9 +23,7 @@ export const GET = async (req: Request) => {
     const decoded = await verifyToken(req);
     const id = (decoded as { id: number }).id;
 
-    const [user] = await sql`
-      SELECT id, name, email, created_at FROM users WHERE id = ${id}
-    `;
+    const user = await findPublicUserById(id);
 
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
@@ -46,9 +50,7 @@ export const PATCH = async (req: Request) => {
     const { name, email } = body;
 
     if (email) {
-      const emailExists = await sql`
-        SELECT * FROM users WHERE email = ${email} AND id != ${id}
-      `;
+      const emailExists = await findUserByEmailExcludingId(email, id);
       if (emailExists.length > 0) {
         return emailAlreadyExists();
       }
@@ -57,23 +59,11 @@ export const PATCH = async (req: Request) => {
     let user;
 
     if (name && email) {
-      [user] = await sql`
-        UPDATE users SET name = ${name}, email = ${email}
-        WHERE id = ${id}
-        RETURNING id, name, email, created_at
-      `;
+      user = await updateUserNameAndEmail(id, name, email);
     } else if (name) {
-      [user] = await sql`
-        UPDATE users SET name = ${name}
-        WHERE id = ${id}
-        RETURNING id, name, email, created_at
-      `;
+      user = await updateUserName(id, name);
     } else if (email) {
-      [user] = await sql`
-        UPDATE users SET email = ${email}
-        WHERE id = ${id}
-        RETURNING id, name, email, created_at
-      `;
+      user = await updateUserEmail(id, email);
     }
 
     if (!user) return notFound();

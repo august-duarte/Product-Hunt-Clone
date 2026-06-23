@@ -1,4 +1,3 @@
-import sql from "@/lib/db";
 import { loginValidation } from "@/lib/validations/auth";
 import { createToken } from "@/lib/auth/jwt";
 import { NextResponse } from "next/server";
@@ -9,6 +8,7 @@ import {
   invalidEmailOrPassword,
   validationError,
 } from "@/lib/api/responses";
+import { findUserByEmail } from "@/lib/queries/users";
 
 export const POST = async (req: Request) => {
   try {
@@ -20,9 +20,7 @@ export const POST = async (req: Request) => {
 
     const { email, password } = body;
 
-    const [user] = await sql`
-      SELECT * FROM users WHERE email = ${email}
-    `
+    const user = await findUserByEmail(email);
 
     const hashToCompare = user?.password ?? DUMMY_PASSWORD_HASH;
     const validPassword = await comparePassword(password, hashToCompare);

@@ -1,4 +1,3 @@
-import sql from "@/lib/db";
 import { registerValidation } from "@/lib/validations/auth";
 import { NextResponse } from "next/server";
 import { hashPassword } from "@/lib/auth/hash-password";
@@ -7,6 +6,7 @@ import {
   internalServerError,
   validationError,
 } from "@/lib/api/responses";
+import { createUser, findUserByEmail } from "@/lib/queries/users";
 
 export const POST = async (req: Request) => {
   try {
@@ -20,18 +20,11 @@ export const POST = async (req: Request) => {
 
     const hashedPassword = await hashPassword(password);
 
-    const emailExists = await sql`
-      SELECT * FROM users WHERE email = ${email}
-    `
-    if (emailExists.length > 0) {
+    if (await findUserByEmail(email)) {
       return emailAlreadyExists();
     }
 
-    const [user] = await sql`
-      INSERT INTO users (name, email, password)
-      VALUES (${name}, ${email}, ${hashedPassword})
-      RETURNING id, name, email, created_at
-    `;
+    const user = await createUser(name, email, hashedPassword);
     return NextResponse.json({ user: user }, { status: 201 })
   } catch (error) {
     console.error('Register failed', error);

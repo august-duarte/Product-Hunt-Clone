@@ -1,4 +1,3 @@
-import sql from "@/lib/db";
 import { NextResponse } from "next/server";
 import verifyToken from "@/lib/auth/verify-token";
 import {
@@ -8,6 +7,7 @@ import {
   notFound,
   unauthorized,
 } from "@/lib/api/responses";
+import { findPublicUserById, findUserIsAdmin } from "@/lib/queries/users";
 
 const AUTH_ERRORS = ['Access denied', 'Invalid token', 'Token already used'];
 
@@ -26,17 +26,13 @@ export const GET = async (
     }
 
     if (currentUserId !== requestedUserId) {
-      const [currentUser] = await sql`
-        SELECT is_admin FROM users WHERE id = ${currentUserId}
-      `;
+      const currentUser = await findUserIsAdmin(currentUserId);
       if (!currentUser?.is_admin) {
         return forbidden();
       }
     }
 
-    const [user] = await sql`
-      SELECT id, name, email, created_at FROM users WHERE id = ${requestedUserId}
-    `;
+    const user = await findPublicUserById(requestedUserId);
 
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
