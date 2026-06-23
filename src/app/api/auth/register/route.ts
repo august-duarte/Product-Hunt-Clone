@@ -1,6 +1,8 @@
 import { registerValidation } from "@/lib/validations/auth";
 import { NextResponse } from "next/server";
 import { hashPassword } from "@/lib/auth/hash-password";
+import { createToken } from "@/lib/auth/jwt";
+import { COOKIE_NAME, getAuthCookieOptions } from "@/lib/auth/cookies";
 import {
   emailAlreadyExists,
   internalServerError,
@@ -25,7 +27,11 @@ export const POST = async (req: Request) => {
     }
 
     const user = await createUser(name, email, hashedPassword);
-    return NextResponse.json({ user: user }, { status: 201 })
+    const token = createToken(String(user.id));
+
+    const response = NextResponse.json({ user }, { status: 201 });
+    response.cookies.set(COOKIE_NAME, token, getAuthCookieOptions());
+    return response;
   } catch (error) {
     console.error('Register failed', error);
     return internalServerError();
