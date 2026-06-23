@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 export const COOKIE_NAME = 'auth_token';
 
@@ -25,4 +26,9 @@ export const getAuthCookie = async (): Promise<string | undefined> => {
 export const clearAuthCookie = async () => {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
+}
+
+export function attachAuthCookie(response: NextResponse, token: string) {
+  response.cookies.set(COOKIE_NAME, token, getAuthCookieOptions());
+  return response;
 }
