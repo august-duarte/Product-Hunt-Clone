@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
+import { ContentContainer } from "@/components/layout/ContentContainer";
 import Script from "next/script";
 import "./globals.css";
 
@@ -21,7 +22,7 @@ export default function RootLayout({
           src="https://cdn.tailwindcss.com"
           strategy="beforeInteractive"
         />
-        {children}
+        <ContentContainer>{children}</ContentContainer>
       </body>
     </html>
   );

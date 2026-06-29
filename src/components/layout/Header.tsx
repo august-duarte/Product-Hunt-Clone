@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { getAuthCookie } from "@/lib/auth/cookies";
 import { findPublicUserById } from "@/lib/queries/users";
 import { AvatarMenu } from "@/components/layout/AvatarMenu";
+import { contentWidthClass } from "@/components/layout/ContentContainer";
 import type { PublicUser } from "@/types/user";
 
 const navButtonStyles =
@@ -28,7 +29,7 @@ export async function Header() {
   const user = await getCurrentUser();
 
   return (
-    <header className="sticky top-0 z-50 relative border-b border-gray-300 bg-white px-6 py-4">
+    <header className={`sticky top-0 z-50 relative border-b border-gray-300 bg-white px-6 py-4 ${contentWidthClass}`}>
       <nav className="flex items-center justify-center gap-4">
         <Link href="/" className={navButtonStyles}>
           Home
