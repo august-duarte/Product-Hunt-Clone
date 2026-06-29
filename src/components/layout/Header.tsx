@@ -2,6 +2,7 @@ import Link from "next/link";
 import jwt from "jsonwebtoken";
 import { getAuthCookie } from "@/lib/auth/cookies";
 import { findPublicUserById } from "@/lib/queries/users";
+import { AvatarMenu } from "@/components/layout/AvatarMenu";
 import type { PublicUser } from "@/types/user";
 
 const navButtonStyles =
@@ -39,12 +40,7 @@ export async function Header() {
 
       <div className="absolute right-6 top-1/2 -translate-y-1/2">
         {user ? (
-          <div
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-gray-100 text-sm font-semibold text-gray-900"
-            title={user.name}
-          >
-            {user.name.charAt(0).toUpperCase()}
-          </div>
+          <AvatarMenu name={user.name} />
         ) : (
           <Link href="/login" className={navButtonStyles}>
             Sign in
