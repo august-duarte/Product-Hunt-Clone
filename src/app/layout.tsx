@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Header } from "@/components/layout/Header";
 import Script from "next/script";
 import "./globals.css";
 
@@ -15,6 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Header />
         <Script
           src="https://cdn.tailwindcss.com"
           strategy="beforeInteractive"
