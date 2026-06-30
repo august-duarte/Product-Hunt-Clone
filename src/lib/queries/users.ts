@@ -26,14 +26,14 @@ export const createUser = async (
   const [user] = await sql`
     INSERT INTO users (name, email, password)
     VALUES (${name}, ${email}, ${password})
-    RETURNING id, name, email, created_at
+    RETURNING id, name, email, avatar_url, created_at
   `;
   return user as PublicUser;
 };
 
 export const findPublicUserById = async (id: number): Promise<PublicUser | undefined> => {
   const [user] = await sql`
-    SELECT id, name, email, created_at FROM users WHERE id = ${id}
+    SELECT id, name, email, avatar_url, created_at FROM users WHERE id = ${id}
   `;
   return user as PublicUser | undefined;
 };
@@ -62,7 +62,7 @@ export const updateUserNameAndEmail = async (
   const [user] = await sql`
     UPDATE users SET name = ${name}, email = ${email}
     WHERE id = ${id}
-    RETURNING id, name, email, created_at
+    RETURNING id, name, email, avatar_url, created_at
   `;
   return user as PublicUser | undefined;
 };
@@ -74,7 +74,7 @@ export const updateUserName = async (
   const [user] = await sql`
     UPDATE users SET name = ${name}
     WHERE id = ${id}
-    RETURNING id, name, email, created_at
+    RETURNING id, name, email, avatar_url, created_at
   `;
   return user as PublicUser | undefined;
 };
@@ -86,7 +86,7 @@ export const updateUserEmail = async (
   const [user] = await sql`
     UPDATE users SET email = ${email}
     WHERE id = ${id}
-    RETURNING id, name, email, created_at
+    RETURNING id, name, email, avatar_url, created_at
   `;
   return user as PublicUser | undefined;
 };

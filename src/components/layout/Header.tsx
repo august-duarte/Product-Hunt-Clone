@@ -41,7 +41,7 @@ export async function Header() {
 
       <div className="absolute right-6 top-1/2 -translate-y-1/2">
         {user ? (
-          <AvatarMenu name={user.name} />
+          <AvatarMenu name={user.name} avatarUrl={user.avatar_url} />
         ) : (
           <Link href="/login" className={navButtonStyles}>
             Sign in

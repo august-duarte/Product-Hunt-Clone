@@ -3,6 +3,7 @@ export type User = {
   name: string;
   email: string;
   password: string;
+  avatar_url?: string | null;
   is_admin?: boolean;
   created_at: Date | string;
 };
@@ -11,6 +12,7 @@ export type PublicUser = {
   id: number;
   name: string;
   email: string;
+  avatar_url: string | null;
   created_at: Date | string;
 };
 

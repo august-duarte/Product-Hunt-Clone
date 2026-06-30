@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Avatar } from "@/components/ui/Avatar";
 
 type AvatarMenuProps = {
   name: string;
+  avatarUrl?: string | null;
 };
 
-export function AvatarMenu({ name }: AvatarMenuProps) {
+export function AvatarMenu({ name, avatarUrl }: AvatarMenuProps) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -18,11 +20,8 @@ export function AvatarMenu({ name }: AvatarMenuProps) {
 
   return (
     <div className="group relative">
-      <div
-        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-gray-300 bg-gray-100 text-sm font-semibold text-gray-900"
-        title={name}
-      >
-        {name.charAt(0).toUpperCase()}
+      <div className="cursor-pointer">
+        <Avatar name={name} avatarUrl={avatarUrl} />
       </div>
 
       <div className="absolute right-0 top-full z-50 hidden pt-1 group-hover:block">
