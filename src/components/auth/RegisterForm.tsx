@@ -26,6 +26,7 @@ export default function RegisterForm() {
       });
 
       if (response.ok) {
+        router.refresh();
         router.push("/");
       } else {
         const data = await response.json();
