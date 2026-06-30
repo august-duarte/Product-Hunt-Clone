@@ -18,13 +18,16 @@ export function Avatar({ name, avatarUrl, className }: AvatarProps) {
 
   if (showImage) {
     return (
-      <img
-        src={avatarUrl!}
-        alt={name}
-        title={name}
-        className={`${styles} object-cover`}
-        onError={() => setImageFailed(true)}
-      />
+      <div className={styles} title={name}>
+        <img
+          src={avatarUrl!}
+          alt={name}
+          width={40}
+          height={40}
+          className="h-full w-full object-cover"
+          onError={() => setImageFailed(true)}
+        />
+      </div>
     );
   }
 
