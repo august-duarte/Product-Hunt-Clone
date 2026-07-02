@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
@@ -73,6 +74,12 @@ export default function LoginForm() {
         >
           {isLoading ? "Logging in..." : "Login"}
         </Button>
+        <p className="mt-4 text-sm text-gray-700">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-orange-500 hover:underline">
+            Sign up here!
+          </Link>
+        </p>
       </form>
 
       {errorMessage && (

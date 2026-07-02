@@ -24,14 +24,9 @@ export function UserMenu() {
 
   if (!user) {
     return (
-      <div className="flex shrink-0 items-center gap-2">
-        <Link href="/login" className={navButtonStyles}>
-          Login
-        </Link>
-        <Link href="/register" className={navButtonStyles}>
-          Sign up
-        </Link>
-      </div>
+      <Link href="/login" className={navButtonStyles}>
+        Login
+      </Link>
     );
   }
 
