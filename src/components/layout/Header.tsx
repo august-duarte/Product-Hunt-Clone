@@ -30,10 +30,15 @@ export async function Header() {
 
   return (
     <header className={`sticky top-0 z-50 relative border-b border-gray-300 bg-white px-6 py-4 ${contentWidthClass}`}>
+      <Link
+        href="/"
+        className="absolute left-6 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-orange-500 text-lg font-bold text-white hover:bg-orange-600"
+        aria-label="Home"
+      >
+        P
+      </Link>
+
       <nav className="flex items-center justify-center gap-4">
-        <Link href="/" className={navButtonStyles}>
-          Home
-        </Link>
         <Link href="/register" className={navButtonStyles}>
           Register
         </Link>
