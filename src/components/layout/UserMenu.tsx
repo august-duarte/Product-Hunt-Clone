@@ -1,19 +1,44 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/Avatar";
+import { useUserAuth } from "@/hooks/user-auth";
 
-type AvatarMenuProps = {
-  name: string;
-  avatarUrl?: string | null;
-  onLogout: () => Promise<void>;
-};
+const navButtonStyles =
+  "rounded-lg border border-gray-300 bg-white px-4 py-2 text-base text-gray-900 hover:bg-gray-50";
 
-export function AvatarMenu({ name, avatarUrl, onLogout }: AvatarMenuProps) {
+export function UserMenu() {
+  const { user, loading, logout } = useUserAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+    router.refresh();
+  };
+
+  if (loading) {
+    return null;
+  }
+
+  if (!user) {
+    return (
+      <div className="flex shrink-0 items-center gap-2">
+        <Link href="/login" className={navButtonStyles}>
+          Login
+        </Link>
+        <Link href="/register" className={navButtonStyles}>
+          Sign up
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="group relative">
+    <div className="group relative shrink-0">
       <div className="cursor-pointer">
-        <Avatar name={name} avatarUrl={avatarUrl} />
+        <Avatar name={user.name} avatarUrl={user.avatar_url} />
       </div>
 
       <div className="absolute right-0 top-full z-50 hidden pt-1 group-hover:block">
@@ -32,7 +57,7 @@ export function AvatarMenu({ name, avatarUrl, onLogout }: AvatarMenuProps) {
           </Link>
           <button
             type="button"
-            onClick={onLogout}
+            onClick={handleLogout}
             className="block w-full px-4 py-2 text-left text-sm text-gray-900 hover:bg-gray-50"
           >
             Logout
