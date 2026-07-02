@@ -1,23 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/Avatar";
 
 type AvatarMenuProps = {
   name: string;
   avatarUrl?: string | null;
+  onLogout: () => Promise<void>;
 };
 
-export function AvatarMenu({ name, avatarUrl }: AvatarMenuProps) {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-    router.refresh();
-  };
-
+export function AvatarMenu({ name, avatarUrl, onLogout }: AvatarMenuProps) {
   return (
     <div className="group relative">
       <div className="cursor-pointer">
@@ -40,7 +32,7 @@ export function AvatarMenu({ name, avatarUrl }: AvatarMenuProps) {
           </Link>
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={onLogout}
             className="block w-full px-4 py-2 text-left text-sm text-gray-900 hover:bg-gray-50"
           >
             Logout

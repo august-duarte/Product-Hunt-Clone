@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/layout/Header";
 import { ContentContainer } from "@/components/layout/ContentContainer";
+import { UserAuthProvider } from "@/hooks/user-auth";
 import Script from "next/script";
 import "./globals.css";
 
@@ -17,12 +18,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        <Script
-          src="https://cdn.tailwindcss.com"
-          strategy="beforeInteractive"
-        />
-        <ContentContainer>{children}</ContentContainer>
+        <UserAuthProvider>
+          <Header />
+          <Script
+            src="https://cdn.tailwindcss.com"
+            strategy="beforeInteractive"
+          />
+          <ContentContainer>{children}</ContentContainer>
+        </UserAuthProvider>
       </body>
     </html>
   );

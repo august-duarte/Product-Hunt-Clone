@@ -1,32 +1,23 @@
+"use client";
+
 import Link from "next/link";
-import jwt from "jsonwebtoken";
-import { getAuthCookie } from "@/lib/auth/cookies";
-import { findPublicUserById } from "@/lib/queries/users";
+import { useRouter } from "next/navigation";
 import { AvatarMenu } from "@/components/layout/AvatarMenu";
 import { contentWidthClass } from "@/components/layout/ContentContainer";
-import type { PublicUser } from "@/types/user";
+import { useUserAuth } from "@/hooks/user-auth";
 
 const navButtonStyles =
   "rounded-lg border border-gray-300 bg-white px-4 py-2 text-base text-gray-900 hover:bg-gray-50";
 
-async function getCurrentUser(): Promise<PublicUser | null> {
-  const token = await getAuthCookie();
-  if (!token) return null;
+export function Header() {
+  const { user, loading, logout } = useUserAuth();
+  const router = useRouter();
 
-  const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret) return null;
-
-  try {
-    const decoded = jwt.verify(token, jwtSecret) as { id: number | string };
-    const user = await findPublicUserById(Number(decoded.id));
-    return user ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export async function Header() {
-  const user = await getCurrentUser();
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <header className={`sticky top-0 z-50 relative border-b border-gray-300 bg-white px-6 py-4 ${contentWidthClass}`}>
@@ -45,8 +36,12 @@ export async function Header() {
       </nav>
 
       <div className="absolute right-6 top-1/2 -translate-y-1/2">
-        {user ? (
-          <AvatarMenu name={user.name} avatarUrl={user.avatar_url} />
+        {!loading && user ? (
+          <AvatarMenu
+            name={user.name}
+            avatarUrl={user.avatar_url}
+            onLogout={handleLogout}
+          />
         ) : (
           <Link href="/login" className={navButtonStyles}>
             Sign in

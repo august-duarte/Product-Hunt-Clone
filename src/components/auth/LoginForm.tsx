@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { useState } from "react";
+import { useUserAuth } from "@/hooks/user-auth";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -10,6 +11,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
+  const { refreshUser } = useUserAuth();
 
   const handleLogin = async () => {
     if (isLoading) return;
@@ -25,6 +27,7 @@ export default function LoginForm() {
       });
 
       if (response.ok) {
+        await refreshUser();
         router.refresh();
         router.push("/");
       } else {

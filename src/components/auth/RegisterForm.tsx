@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import { useState } from "react";
+import { useUserAuth } from "@/hooks/user-auth";
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
@@ -11,6 +12,7 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
+  const { refreshUser } = useUserAuth();
 
   const handleRegister = async () => {
     if (isLoading) return;
@@ -26,6 +28,7 @@ export default function RegisterForm() {
       });
 
       if (response.ok) {
+        await refreshUser();
         router.refresh();
         router.push("/");
       } else {
