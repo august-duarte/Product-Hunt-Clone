@@ -4,7 +4,12 @@ import {
   internalServerError,
   validationError,
 } from '@/lib/api/responses';
-import { createProduct, getProductBySlug } from '@/lib/queries/products';
+import {
+  createProduct,
+  getProductBySlug,
+  listProducts,
+  listProductsForToday,
+} from '@/lib/queries/products';
 import { createProductValidation } from '@/lib/validations/product';
 
 function slugify(name: string): string {
@@ -14,6 +19,22 @@ function slugify(name: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
+export const GET = async (req: Request) => {
+  try {
+    const { searchParams } = new URL(req.url);
+    const todayOnly = searchParams.get('today') === 'true';
+
+    const products = todayOnly
+      ? await listProductsForToday()
+      : await listProducts();
+
+    return NextResponse.json({ products }, { status: 200 });
+  } catch (error) {
+    console.error('List products failed', error);
+    return internalServerError();
+  }
+};
 
 export const POST = withAuth(async (req, { id: userId }) => {
   try {

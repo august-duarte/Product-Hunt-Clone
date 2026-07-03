@@ -8,3 +8,7 @@ export type Product = {
   user_id: number;
   created_at: Date | string;
 };
+
+export type ProductWithUpvoteCount = Product & {
+  upvote_count: number;
+};

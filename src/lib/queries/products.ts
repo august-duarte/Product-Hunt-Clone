@@ -1,5 +1,5 @@
 import sql from '@/lib/db';
-import type { Product } from '@/types/product';
+import type { Product, ProductWithUpvoteCount } from '@/types/product';
 
 export const createProduct = async (
   name: string,
@@ -28,15 +28,44 @@ export const getProductBySlug = async (
   return product as Product | undefined;
 };
 
-export const listProductsForToday = async (): Promise<Product[]> => {
+export const listProducts = async (): Promise<ProductWithUpvoteCount[]> => {
   const products = await sql`
-    SELECT id, name, slug, tagline, description, url, user_id, created_at
-    FROM products
-    WHERE created_at >= CURRENT_DATE
-      AND created_at < CURRENT_DATE + INTERVAL '1 day'
-    ORDER BY created_at DESC
+    SELECT
+      p.id,
+      p.name,
+      p.slug,
+      p.tagline,
+      p.description,
+      p.url,
+      p.user_id,
+      p.created_at,
+      COALESCE(COUNT(u.id), 0)::int AS upvote_count
+    FROM products p
+    LEFT JOIN upvotes u ON u.product_id = p.id
+    GROUP BY p.id
+    ORDER BY p.created_at DESC
   `;
-  // Later: join upvotes and sort by upvote count, then created_at:
-  // ORDER BY upvote_count DESC, created_at DESC
-  return products as Product[];
+  return products as ProductWithUpvoteCount[];
+};
+
+export const listProductsForToday = async (): Promise<ProductWithUpvoteCount[]> => {
+  const products = await sql`
+    SELECT
+      p.id,
+      p.name,
+      p.slug,
+      p.tagline,
+      p.description,
+      p.url,
+      p.user_id,
+      p.created_at,
+      COALESCE(COUNT(u.id), 0)::int AS upvote_count
+    FROM products p
+    LEFT JOIN upvotes u ON u.product_id = p.id
+    WHERE p.created_at >= CURRENT_DATE
+      AND p.created_at < CURRENT_DATE + INTERVAL '1 day'
+    GROUP BY p.id
+    ORDER BY p.created_at DESC
+  `;
+  return products as ProductWithUpvoteCount[];
 };
