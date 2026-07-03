@@ -19,7 +19,15 @@ export function Header() {
 
       <nav className="flex items-center justify-center gap-4" />
 
-      <UserMenu />
+      <div className="flex shrink-0 items-center gap-3">
+        <Link
+          href="/products/new"
+          className="rounded-full border border-orange-500 bg-orange-500 px-4 py-2 text-base font-medium text-white hover:bg-orange-600"
+        >
+          + Submit
+        </Link>
+        <UserMenu />
+      </div>
     </header>
   );
 }
