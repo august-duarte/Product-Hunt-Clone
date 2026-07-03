@@ -21,5 +21,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/products/new'],  // add more protected page paths later
+  // Route protection is handled client-side and on API routes via withAuth.
+  // jsonwebtoken is not reliable in Edge middleware.
+  matcher: [],
 };
