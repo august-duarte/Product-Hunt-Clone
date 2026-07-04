@@ -108,7 +108,7 @@ export const listProducts = async (): Promise<ProductListItem[]> => {
     LEFT JOIN users maker ON maker.id = p.user_id
     LEFT JOIN upvotes uv ON uv.product_id = p.id
     GROUP BY p.id, maker.name
-    ORDER BY p.created_at DESC
+    ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return products as ProductListItem[];
 };
@@ -132,7 +132,7 @@ export const listProductsForToday = async (): Promise<ProductListItem[]> => {
     WHERE p.created_at >= CURRENT_DATE
       AND p.created_at < CURRENT_DATE + INTERVAL '1 day'
     GROUP BY p.id, maker.name
-    ORDER BY p.created_at DESC
+    ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return products as ProductListItem[];
 };
