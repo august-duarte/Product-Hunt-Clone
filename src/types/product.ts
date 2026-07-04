@@ -13,6 +13,10 @@ export type ProductWithUpvoteCount = Product & {
   upvote_count: number;
 };
 
+export type ProductListItem = ProductWithUpvoteCount & {
+  maker_name: string;
+};
+
 export type UpdateProductInput = {
   name?: string;
   slug?: string;
