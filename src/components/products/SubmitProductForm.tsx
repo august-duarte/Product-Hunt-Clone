@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/Input";
 import { useUserAuth } from "@/hooks/user-auth";
 
 const fieldStyles =
-  "m-2 w-full max-w-md rounded-lg border border-gray-300 bg-white px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-500 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100";
+  "m-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-500 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100";
+
+const longInputClassName = "!m-2 !w-full";
 
 export default function SubmitProductForm() {
   const [name, setName] = useState("");
@@ -67,7 +69,7 @@ export default function SubmitProductForm() {
   return (
     <>
       <form
-        className="mx-auto flex w-full max-w-md flex-col py-12"
+        className="mx-auto flex w-full max-w-2xl flex-col py-12"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
@@ -81,7 +83,7 @@ export default function SubmitProductForm() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full max-w-md"
+          className={longInputClassName}
           required
         />
         <Input
@@ -89,7 +91,7 @@ export default function SubmitProductForm() {
           type="text"
           value={tagline}
           onChange={(e) => setTagline(e.target.value)}
-          className="w-full max-w-md"
+          className={longInputClassName}
           required
         />
         <textarea
@@ -103,13 +105,13 @@ export default function SubmitProductForm() {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="w-full max-w-md"
+          className={longInputClassName}
           required
         />
         <Button
           type="submit"
           disabled={isLoading}
-          className={`mt-4 w-full max-w-md ${isLoading ? "cursor-not-allowed opacity-50" : "bg-orange-500 text-white hover:bg-orange-600"}`}
+          className={`mt-4 w-full ${isLoading ? "cursor-not-allowed opacity-50" : "bg-orange-500 text-white hover:bg-orange-600"}`}
         >
           {isLoading ? "Submitting..." : "Submit product"}
         </Button>
