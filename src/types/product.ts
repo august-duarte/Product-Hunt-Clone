@@ -12,3 +12,11 @@ export type Product = {
 export type ProductWithUpvoteCount = Product & {
   upvote_count: number;
 };
+
+export type UpdateProductInput = {
+  name?: string;
+  slug?: string;
+  tagline?: string;
+  description?: string | null;
+  url?: string;
+};

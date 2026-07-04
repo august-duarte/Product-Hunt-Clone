@@ -50,6 +50,43 @@ export const getProductById = async (
   return product as ProductWithUpvoteCount | undefined;
 };
 
+export const updateProduct = async (
+  id: number,
+  name: string,
+  slug: string,
+  tagline: string,
+  description: string | null,
+  url: string,
+): Promise<ProductWithUpvoteCount | undefined> => {
+  const [product] = await sql`
+    UPDATE products
+    SET
+      name = ${name},
+      slug = ${slug},
+      tagline = ${tagline},
+      description = ${description},
+      url = ${url}
+    WHERE id = ${id}
+    RETURNING id
+  `;
+
+  if (!product) return undefined;
+  return getProductById(id);
+};
+
+export const deleteProduct = async (id: number): Promise<boolean> => {
+  await sql`
+    DELETE FROM upvotes WHERE product_id = ${id}
+  `;
+
+  const deleted = await sql`
+    DELETE FROM products WHERE id = ${id}
+    RETURNING id
+  `;
+
+  return deleted.length > 0;
+};
+
 export const listProducts = async (): Promise<ProductWithUpvoteCount[]> => {
   const products = await sql`
     SELECT
