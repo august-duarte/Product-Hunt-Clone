@@ -111,7 +111,7 @@ export default function SubmitProductForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className={`mt-4 w-full ${isLoading ? "cursor-not-allowed opacity-50" : "bg-orange-500 text-white hover:bg-orange-600"}`}
+          className={`mt-4 w-full !border-orange-500 !bg-orange-500 !text-white hover:!bg-orange-600 ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
         >
           {isLoading ? "Submitting..." : "Submit product"}
         </Button>
