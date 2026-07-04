@@ -8,7 +8,10 @@ export function UpvoteButton({ count = 0 }: UpvoteButtonProps) {
   return (
     <button
       type="button"
-      disabled
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
       aria-label="Upvote (coming soon)"
       className="flex min-w-14 flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 opacity-70"
     >
