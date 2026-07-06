@@ -58,7 +58,7 @@ export function ProductCard({ rank, product }: ProductCardProps) {
           <span className="text-sm leading-none">💬</span>
           <span className="mt-1 text-sm font-semibold">0</span>
         </button>
-        <UpvoteButton count={product.upvote_count} />
+        <UpvoteButton productId={product.id} count={product.upvote_count} />
       </div>
     </article>
   );
