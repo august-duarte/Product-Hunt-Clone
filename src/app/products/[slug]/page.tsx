@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CommentForm } from "@/components/comments/CommentForm";
+import { CommentList } from "@/components/comments/CommentList";
+import { listCommentsForProduct } from "@/lib/queries/comments";
 import { getProductBySlug } from "@/lib/queries/products";
 
 type ProductPageProps = {
@@ -13,6 +16,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product) {
     notFound();
   }
+
+  const comments = await listCommentsForProduct(product.id);
 
   return (
     <main className="py-12">
@@ -35,6 +40,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
       >
         Visit website
       </Link>
+
+      <section className="mt-12 max-w-2xl">
+        <h2 className="mb-4 text-xl font-semibold text-gray-900">
+          Comments
+        </h2>
+        <div className="mb-6">
+          <CommentForm productId={product.id} />
+        </div>
+        <CommentList comments={comments} />
+      </section>
     </main>
   );
 }
