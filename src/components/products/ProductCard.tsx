@@ -52,11 +52,13 @@ export function ProductCard({ rank, product }: ProductCardProps) {
             event.preventDefault();
             event.stopPropagation();
           }}
-          aria-label="Comments (coming soon)"
+          aria-label={`${product.comment_count} comments`}
           className="flex min-w-14 flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 opacity-70"
         >
           <span className="text-sm leading-none">💬</span>
-          <span className="mt-1 text-sm font-semibold">0</span>
+          <span className="mt-1 text-sm font-semibold">
+            {product.comment_count}
+          </span>
         </button>
         <UpvoteButton productId={product.id} count={product.upvote_count} />
       </div>

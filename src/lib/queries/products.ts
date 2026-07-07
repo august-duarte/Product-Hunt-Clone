@@ -103,10 +103,12 @@ export const listProducts = async (): Promise<ProductListItem[]> => {
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
-      COALESCE(COUNT(uv.id), 0)::int AS upvote_count
+      COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
+      COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
     LEFT JOIN users maker ON maker.id = p.user_id
     LEFT JOIN upvotes uv ON uv.product_id = p.id
+    LEFT JOIN comments c ON c.product_id = p.id
     GROUP BY p.id, maker.name
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
@@ -125,10 +127,12 @@ export const listProductsForToday = async (): Promise<ProductListItem[]> => {
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
-      COALESCE(COUNT(uv.id), 0)::int AS upvote_count
+      COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
+      COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
     LEFT JOIN users maker ON maker.id = p.user_id
     LEFT JOIN upvotes uv ON uv.product_id = p.id
+    LEFT JOIN comments c ON c.product_id = p.id
     WHERE p.created_at >= CURRENT_DATE
       AND p.created_at < CURRENT_DATE + INTERVAL '1 day'
     GROUP BY p.id, maker.name

@@ -15,6 +15,7 @@ export type ProductWithUpvoteCount = Product & {
 
 export type ProductListItem = ProductWithUpvoteCount & {
   maker_name: string;
+  comment_count: number;
 };
 
 export type UpdateProductInput = {
