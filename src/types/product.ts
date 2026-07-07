@@ -18,6 +18,8 @@ export type ProductListItem = ProductWithUpvoteCount & {
   comment_count: number;
 };
 
+export type ProductDetailItem = ProductListItem;
+
 export type UpdateProductInput = {
   name?: string;
   slug?: string;

@@ -1,6 +1,7 @@
 import sql from '@/lib/db';
 import type {
   Product,
+  ProductDetailItem,
   ProductListItem,
   ProductWithUpvoteCount,
 } from '@/types/product';
@@ -30,6 +31,32 @@ export const getProductBySlug = async (
     WHERE slug = ${slug}
   `;
   return product as Product | undefined;
+};
+
+export const getProductDetailBySlug = async (
+  slug: string,
+): Promise<ProductDetailItem | undefined> => {
+  const [product] = await sql`
+    SELECT
+      p.id,
+      p.name,
+      p.slug,
+      p.tagline,
+      p.description,
+      p.url,
+      p.user_id,
+      p.created_at,
+      maker.name AS maker_name,
+      COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
+      COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
+    FROM products p
+    LEFT JOIN users maker ON maker.id = p.user_id
+    LEFT JOIN upvotes uv ON uv.product_id = p.id
+    LEFT JOIN comments c ON c.product_id = p.id
+    WHERE p.slug = ${slug}
+    GROUP BY p.id, maker.name
+  `;
+  return product as ProductDetailItem | undefined;
 };
 
 export const getProductById = async (

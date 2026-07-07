@@ -1,0 +1,99 @@
+import Link from "next/link";
+import { CommentForm } from "@/components/comments/CommentForm";
+import { CommentList } from "@/components/comments/CommentList";
+import { UpvoteButton } from "@/components/products/UpvoteButton";
+import type { CommentWithUser } from "@/types/comment";
+import type { ProductDetailItem } from "@/types/product";
+
+type ProductDetailProps = {
+  product: ProductDetailItem;
+  comments: CommentWithUser[];
+};
+
+function formatDate(value: Date | string): string {
+  return new Date(value).toLocaleDateString("en", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export function ProductDetail({ product, comments }: ProductDetailProps) {
+  return (
+    <main className="py-12">
+      <section className="grid gap-8 lg:grid-cols-[1fr_12rem]">
+        <div className="min-w-0">
+          <div className="mb-6 flex items-start gap-4">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-gray-300 bg-gray-100 text-2xl font-semibold text-gray-500">
+              {product.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-3xl font-semibold text-gray-900">
+                {product.name}
+              </h1>
+              <p className="mt-2 text-lg text-gray-700">{product.tagline}</p>
+              <p className="mt-2 text-sm text-gray-500">
+                Launched by {product.maker_name} on{" "}
+                {formatDate(product.created_at)}
+              </p>
+            </div>
+          </div>
+
+          {product.description ? (
+            <p className="whitespace-pre-wrap text-gray-700">
+              {product.description}
+            </p>
+          ) : (
+            <p className="text-gray-500">No description provided yet.</p>
+          )}
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            <span className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-500">
+              Product
+            </span>
+            <span className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-500">
+              Launch
+            </span>
+            <span className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-500">
+              Community
+            </span>
+          </div>
+        </div>
+
+        <aside className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+          <UpvoteButton productId={product.id} count={product.upvote_count} />
+          <Link
+            href={product.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-orange-500 bg-orange-500 px-4 py-3 text-center text-sm font-medium text-white hover:bg-orange-600"
+          >
+            Visit website
+          </Link>
+          <div className="grid grid-cols-2 gap-2 text-center text-sm">
+            <div className="rounded-lg bg-white p-3">
+              <p className="font-semibold text-gray-900">
+                {product.upvote_count}
+              </p>
+              <p className="text-gray-500">Upvotes</p>
+            </div>
+            <div className="rounded-lg bg-white p-3">
+              <p className="font-semibold text-gray-900">
+                {product.comment_count}
+              </p>
+              <p className="text-gray-500">Comments</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section className="mt-12 max-w-2xl">
+        <h2 className="mb-4 text-xl font-semibold text-gray-900">Comments</h2>
+        <div className="mb-6">
+          <CommentForm productId={product.id} />
+        </div>
+        <CommentList comments={comments} />
+      </section>
+    </main>
+  );
+}
