@@ -1,4 +1,5 @@
 import sql from '@/lib/db';
+import { nameToUsername } from '@/lib/utils/slug';
 import type { PublicUser, PublicUserProfile, User } from '@/types/user';
 
 export const findUserByEmail = async (email: string): Promise<User | undefined> => {
@@ -53,7 +54,38 @@ export const findPublicUserProfileById = async (
     WHERE u.id = ${id}
     GROUP BY u.id, u.name, u.avatar_url, u.created_at
   `;
-  return user as PublicUserProfile | undefined;
+
+  if (!user) return undefined;
+
+  const profile = user as Omit<PublicUserProfile, 'username'>;
+  return { ...profile, username: nameToUsername(profile.name) };
+};
+
+export const findPublicUserProfileByUsername = async (
+  username: string,
+): Promise<PublicUserProfile | undefined> => {
+  const [user] = await sql`
+    SELECT
+      u.id,
+      u.name,
+      u.avatar_url,
+      u.created_at,
+      COALESCE(COUNT(p.id), 0)::int AS product_count
+    FROM users u
+    LEFT JOIN products p ON p.user_id = u.id
+    WHERE regexp_replace(
+      regexp_replace(lower(trim(u.name)), '[^a-z0-9]+', '-', 'g'),
+      '(^-+|-+$)',
+      '',
+      'g'
+    ) = ${username}
+    GROUP BY u.id, u.name, u.avatar_url, u.created_at
+  `;
+
+  if (!user) return undefined;
+
+  const profile = user as Omit<PublicUserProfile, 'username'>;
+  return { ...profile, username: nameToUsername(profile.name) };
 };
 
 export const findUserById = async (id: number): Promise<User | undefined> => {

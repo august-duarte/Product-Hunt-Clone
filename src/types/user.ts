@@ -19,6 +19,7 @@ export type PublicUser = {
 export type PublicUserProfile = {
   id: number;
   name: string;
+  username: string;
   avatar_url: string | null;
   product_count: number;
   created_at: Date | string;
