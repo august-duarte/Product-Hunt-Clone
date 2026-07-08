@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CommentForm } from "@/components/comments/CommentForm";
 import { CommentList } from "@/components/comments/CommentList";
 import { UpvoteButton } from "@/components/products/UpvoteButton";
+import { userProfilePath } from "@/lib/utils/slug";
 import type { CommentWithUser } from "@/types/comment";
 import type { ProductDetailItem } from "@/types/product";
 
@@ -33,8 +34,14 @@ export function ProductDetail({ product, comments }: ProductDetailProps) {
               </h1>
               <p className="mt-2 text-lg text-gray-700">{product.tagline}</p>
               <p className="mt-2 text-sm text-gray-500">
-                Launched by {product.maker_name} on{" "}
-                {formatDate(product.created_at)}
+                Launched by{" "}
+                <Link
+                  href={userProfilePath(product.maker_name)}
+                  className="text-gray-700 hover:text-orange-500"
+                >
+                  {product.maker_name}
+                </Link>{" "}
+                on {formatDate(product.created_at)}
               </p>
             </div>
           </div>

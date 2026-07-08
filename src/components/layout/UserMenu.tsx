@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/ui/Avatar";
 import { useUserAuth } from "@/hooks/user-auth";
+import { userProfilePath } from "@/lib/utils/slug";
 
 const navButtonStyles =
   "rounded-lg border border-gray-300 bg-white px-4 py-2 text-base text-gray-900 hover:bg-gray-50";
@@ -39,13 +40,13 @@ export function UserMenu() {
       <div className="absolute right-0 top-full z-50 hidden pt-1 group-hover:block">
         <div className="min-w-40 rounded-lg border border-gray-300 bg-white py-1 shadow-lg">
           <Link
-            href="/profile"
+            href={userProfilePath(user.name)}
             className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-50"
           >
             Profile
           </Link>
           <Link
-            href="/products"
+            href={userProfilePath(user.name)}
             className="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-50"
           >
             My products

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { UpvoteButton } from "@/components/products/UpvoteButton";
+import { userProfilePath } from "@/lib/utils/slug";
 import type { ProductListItem } from "@/types/product";
 
 type ProductCardProps = {
@@ -29,7 +30,16 @@ export function ProductCard({ rank, product }: ProductCardProps) {
           {rank}.{" "}
           <span className="group-hover:text-orange-500">{product.name}</span>{" "}
           <span className="font-normal text-gray-500">
-            by {product.maker_name}
+            by{" "}
+            <Link
+              href={userProfilePath(product.maker_name)}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
+              className="pointer-events-auto relative z-20 hover:text-orange-500"
+            >
+              {product.maker_name}
+            </Link>
           </span>
         </p>
         <p className="mt-1 truncate text-sm text-gray-700">{product.tagline}</p>
