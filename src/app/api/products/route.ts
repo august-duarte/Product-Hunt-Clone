@@ -11,14 +11,7 @@ import {
   listProductsForToday,
 } from '@/lib/queries/products';
 import { createProductValidation } from '@/lib/validations/product';
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
+import { slugify } from '@/lib/utils/slug';
 
 export const GET = async (req: Request) => {
   try {
