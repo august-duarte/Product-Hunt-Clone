@@ -16,6 +16,14 @@ export type PublicUser = {
   created_at: Date | string;
 };
 
+export type PublicUserProfile = {
+  id: number;
+  name: string;
+  avatar_url: string | null;
+  product_count: number;
+  created_at: Date | string;
+};
+
 export type AuthPayload = {
   id: number;
 };

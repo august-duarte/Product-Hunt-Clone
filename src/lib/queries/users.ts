@@ -1,5 +1,5 @@
 import sql from '@/lib/db';
-import type { PublicUser, User } from '@/types/user';
+import type { PublicUser, PublicUserProfile, User } from '@/types/user';
 
 export const findUserByEmail = async (email: string): Promise<User | undefined> => {
   const [user] = await sql`
@@ -36,6 +36,24 @@ export const findPublicUserById = async (id: number): Promise<PublicUser | undef
     SELECT id, name, email, avatar_url, created_at FROM users WHERE id = ${id}
   `;
   return user as PublicUser | undefined;
+};
+
+export const findPublicUserProfileById = async (
+  id: number,
+): Promise<PublicUserProfile | undefined> => {
+  const [user] = await sql`
+    SELECT
+      u.id,
+      u.name,
+      u.avatar_url,
+      u.created_at,
+      COALESCE(COUNT(p.id), 0)::int AS product_count
+    FROM users u
+    LEFT JOIN products p ON p.user_id = u.id
+    WHERE u.id = ${id}
+    GROUP BY u.id, u.name, u.avatar_url, u.created_at
+  `;
+  return user as PublicUserProfile | undefined;
 };
 
 export const findUserById = async (id: number): Promise<User | undefined> => {
