@@ -194,3 +194,38 @@ export const listProductsByUserId = async (
   `;
   return products as ProductListItem[];
 };
+
+export const searchProducts = async (
+  query: string,
+): Promise<ProductListItem[]> => {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) return [];
+
+  const pattern = `%${trimmedQuery}%`;
+  const products = await sql`
+    SELECT
+      p.id,
+      p.name,
+      p.slug,
+      p.tagline,
+      p.description,
+      p.url,
+      p.user_id,
+      p.created_at,
+      maker.name AS maker_name,
+      COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
+      COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
+    FROM products p
+    LEFT JOIN users maker ON maker.id = p.user_id
+    LEFT JOIN upvotes uv ON uv.product_id = p.id
+    LEFT JOIN comments c ON c.product_id = p.id
+    WHERE
+      p.name ILIKE ${pattern}
+      OR p.tagline ILIKE ${pattern}
+      OR p.description ILIKE ${pattern}
+      OR maker.name ILIKE ${pattern}
+    GROUP BY p.id, maker.name
+    ORDER BY upvote_count DESC, p.created_at DESC
+  `;
+  return products as ProductListItem[];
+};
