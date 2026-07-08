@@ -167,3 +167,30 @@ export const listProductsForToday = async (): Promise<ProductListItem[]> => {
   `;
   return products as ProductListItem[];
 };
+
+export const listProductsByUserId = async (
+  userId: number,
+): Promise<ProductListItem[]> => {
+  const products = await sql`
+    SELECT
+      p.id,
+      p.name,
+      p.slug,
+      p.tagline,
+      p.description,
+      p.url,
+      p.user_id,
+      p.created_at,
+      maker.name AS maker_name,
+      COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
+      COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
+    FROM products p
+    LEFT JOIN users maker ON maker.id = p.user_id
+    LEFT JOIN upvotes uv ON uv.product_id = p.id
+    LEFT JOIN comments c ON c.product_id = p.id
+    WHERE p.user_id = ${userId}
+    GROUP BY p.id, maker.name
+    ORDER BY upvote_count DESC, p.created_at DESC
+  `;
+  return products as ProductListItem[];
+};
