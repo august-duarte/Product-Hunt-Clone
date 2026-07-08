@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ProductLogo } from "@/components/products/ProductLogo";
 import { UpvoteButton } from "@/components/products/UpvoteButton";
 import { userProfilePath } from "@/lib/utils/slug";
 import type { ProductListItem } from "@/types/product";
@@ -21,9 +22,12 @@ export function ProductCard({ rank, product }: ProductCardProps) {
         aria-label={`View ${product.name}`}
       />
 
-      <div className="pointer-events-none relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-gray-300 bg-gray-100 text-lg font-semibold text-gray-500">
-        {product.name.charAt(0).toUpperCase()}
-      </div>
+      <ProductLogo
+        name={product.name}
+        logoUrl={product.logo_url}
+        seed={product.id}
+        className="pointer-events-none relative z-10 h-16 w-16 text-lg"
+      />
 
       <div className="pointer-events-none relative z-10 min-w-0 flex-1">
         <p className="truncate text-base font-semibold text-gray-900">

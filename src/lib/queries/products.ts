@@ -1,4 +1,5 @@
 import sql from '@/lib/db';
+import { buildProductLogoUrl } from '@/lib/utils/product-logo';
 import type {
   Product,
   ProductDetailItem,
@@ -14,10 +15,11 @@ export const createProduct = async (
   url: string,
   userId: number,
 ): Promise<Product> => {
+  const logoUrl = buildProductLogoUrl(name);
   const [product] = await sql`
-    INSERT INTO products (name, slug, tagline, description, url, user_id)
-    VALUES (${name}, ${slug}, ${tagline}, ${description}, ${url}, ${userId})
-    RETURNING id, name, slug, tagline, description, url, user_id, created_at
+    INSERT INTO products (name, slug, tagline, description, url, logo_url, user_id)
+    VALUES (${name}, ${slug}, ${tagline}, ${description}, ${url}, ${logoUrl}, ${userId})
+    RETURNING id, name, slug, tagline, description, url, logo_url, user_id, created_at
   `;
   return product as Product;
 };
@@ -26,7 +28,7 @@ export const getProductBySlug = async (
   slug: string,
 ): Promise<Product | undefined> => {
   const [product] = await sql`
-    SELECT id, name, slug, tagline, description, url, user_id, created_at
+    SELECT id, name, slug, tagline, description, url, logo_url, user_id, created_at
     FROM products
     WHERE slug = ${slug}
   `;
@@ -44,6 +46,7 @@ export const getProductDetailBySlug = async (
       p.tagline,
       p.description,
       p.url,
+      p.logo_url,
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
@@ -70,6 +73,7 @@ export const getProductById = async (
       p.tagline,
       p.description,
       p.url,
+      p.logo_url,
       p.user_id,
       p.created_at,
       COALESCE(COUNT(u.id), 0)::int AS upvote_count
@@ -127,6 +131,7 @@ export const listProducts = async (): Promise<ProductListItem[]> => {
       p.tagline,
       p.description,
       p.url,
+      p.logo_url,
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
@@ -151,6 +156,7 @@ export const listProductsForToday = async (): Promise<ProductListItem[]> => {
       p.tagline,
       p.description,
       p.url,
+      p.logo_url,
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
@@ -179,6 +185,7 @@ export const listProductsByUserId = async (
       p.tagline,
       p.description,
       p.url,
+      p.logo_url,
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
@@ -210,6 +217,7 @@ export const searchProducts = async (
       p.tagline,
       p.description,
       p.url,
+      p.logo_url,
       p.user_id,
       p.created_at,
       maker.name AS maker_name,

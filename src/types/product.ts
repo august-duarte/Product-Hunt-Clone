@@ -5,6 +5,7 @@ export type Product = {
   tagline: string;
   description: string | null;
   url: string;
+  logo_url: string | null;
   user_id: number;
   created_at: Date | string;
 };
@@ -26,4 +27,5 @@ export type UpdateProductInput = {
   tagline?: string;
   description?: string | null;
   url?: string;
+  logo_url?: string | null;
 };

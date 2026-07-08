@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CommentForm } from "@/components/comments/CommentForm";
 import { CommentList } from "@/components/comments/CommentList";
+import { ProductLogo } from "@/components/products/ProductLogo";
 import { UpvoteButton } from "@/components/products/UpvoteButton";
 import { userProfilePath } from "@/lib/utils/slug";
 import type { CommentWithUser } from "@/types/comment";
@@ -25,9 +26,12 @@ export function ProductDetail({ product, comments }: ProductDetailProps) {
       <section className="grid gap-8 lg:grid-cols-[1fr_12rem]">
         <div className="min-w-0">
           <div className="mb-6 flex items-start gap-4">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl border border-gray-300 bg-gray-100 text-2xl font-semibold text-gray-500">
-              {product.name.charAt(0).toUpperCase()}
-            </div>
+            <ProductLogo
+              name={product.name}
+              logoUrl={product.logo_url}
+              seed={product.id}
+              className="h-20 w-20 rounded-2xl text-2xl"
+            />
             <div className="min-w-0">
               <h1 className="text-3xl font-semibold text-gray-900">
                 {product.name}
