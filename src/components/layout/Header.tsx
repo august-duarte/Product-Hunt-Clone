@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { HeaderSearchBar } from "@/components/layout/HeaderSearchBar";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { contentWidthClass } from "@/components/layout/ContentContainer";
 
 export function Header() {
@@ -30,6 +31,7 @@ export function Header() {
       </div>
 
       <div className="flex shrink-0 items-center gap-3">
+        <ThemeToggle />
         <Link
           href="/products/new"
           className="rounded-full border-2 border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-900 hover:bg-gray-50"
