@@ -10,6 +10,10 @@ import {
   listProducts,
   listProductsForToday,
 } from '@/lib/queries/products';
+import {
+  resolveTagIdsFromNames,
+  setProductTags,
+} from '@/lib/queries/tags';
 import { createProductValidation } from '@/lib/validations/product';
 import { slugify } from '@/lib/utils/slug';
 
@@ -37,12 +41,20 @@ export const POST = withAuth(async (req, { id: userId }) => {
       return validationError(error.details[0].message);
     }
 
-    const { name, tagline, url, slug: providedSlug, description } = value as {
+    const {
+      name,
+      tagline,
+      url,
+      slug: providedSlug,
+      description,
+      tags = [],
+    } = value as {
       name: string;
       tagline: string;
       url: string;
       slug?: string;
       description?: string | null;
+      tags?: string[];
     };
 
     const slug = providedSlug ?? slugify(name);
@@ -66,6 +78,11 @@ export const POST = withAuth(async (req, { id: userId }) => {
       url,
       userId,
     );
+
+    if (tags.length > 0) {
+      const tagIds = await resolveTagIdsFromNames(tags);
+      await setProductTags(product.id, tagIds);
+    }
 
     return NextResponse.json({ product }, { status: 201 });
   } catch (error) {

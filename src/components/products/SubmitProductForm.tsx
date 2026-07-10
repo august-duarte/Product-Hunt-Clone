@@ -5,17 +5,22 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useUserAuth } from "@/hooks/user-auth";
+import type { Tag } from "@/types/tag";
 
 const fieldStyles =
   "m-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-500 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100";
 
 const longInputClassName = "!m-2 !w-full";
+const MAX_TAGS = 5;
 
 export default function SubmitProductForm() {
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [customTag, setCustomTag] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
@@ -27,9 +32,51 @@ export default function SubmitProductForm() {
     }
   }, [loading, router, user]);
 
+  useEffect(() => {
+    const loadTags = async () => {
+      try {
+        const response = await fetch("/api/tags", {
+          method: "GET",
+          credentials: "same-origin",
+        });
+        if (!response.ok) return;
+
+        const data = (await response.json()) as { tags: Tag[] };
+        setAvailableTags(data.tags);
+      } catch {
+        // Keep the form usable even if tags fail to load.
+      }
+    };
+
+    loadTags();
+  }, []);
+
   if (loading || !user) {
     return null;
   }
+
+  const addTag = (tagName: string) => {
+    const trimmed = tagName.trim();
+    if (!trimmed) return;
+
+    const alreadySelected = selectedTags.some(
+      (tag) => tag.toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (alreadySelected || selectedTags.length >= MAX_TAGS) return;
+
+    setSelectedTags((current) => [...current, trimmed]);
+  };
+
+  const removeTag = (tagName: string) => {
+    setSelectedTags((current) =>
+      current.filter((tag) => tag.toLowerCase() !== tagName.toLowerCase()),
+    );
+  };
+
+  const handleAddCustomTag = () => {
+    addTag(customTag);
+    setCustomTag("");
+  };
 
   const handleSubmit = async () => {
     if (isLoading) return;
@@ -47,6 +94,7 @@ export default function SubmitProductForm() {
           tagline,
           description: description || null,
           url,
+          tags: selectedTags,
         }),
       });
 
@@ -108,6 +156,93 @@ export default function SubmitProductForm() {
           className={longInputClassName}
           required
         />
+
+        <section className="m-2 mt-4">
+          <h2 className="text-base font-semibold text-gray-900">Tags</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Choose up to {MAX_TAGS} tags so people can find your product.
+          </p>
+
+          {selectedTags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {selectedTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  className="rounded-full border border-orange-500 bg-orange-50 px-3 py-1 text-sm text-orange-700 hover:bg-orange-100"
+                  aria-label={`Remove ${tag}`}
+                >
+                  {tag} ×
+                </button>
+              ))}
+            </div>
+          )}
+
+          {availableTags.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {availableTags.map((tag) => {
+                const isSelected = selectedTags.some(
+                  (selected) =>
+                    selected.toLowerCase() === tag.name.toLowerCase(),
+                );
+                const isDisabled =
+                  !isSelected && selectedTags.length >= MAX_TAGS;
+
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    disabled={isDisabled}
+                    onClick={() => {
+                      if (isSelected) {
+                        removeTag(tag.name);
+                        return;
+                      }
+                      addTag(tag.name);
+                    }}
+                    className={`rounded-full border px-3 py-1 text-sm ${
+                      isSelected
+                        ? "border-orange-500 bg-orange-500 text-white"
+                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                    } ${isDisabled ? "cursor-not-allowed opacity-50" : ""}`}
+                  >
+                    {tag.name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <input
+              type="text"
+              value={customTag}
+              onChange={(e) => setCustomTag(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAddCustomTag();
+                }
+              }}
+              placeholder="Add a custom tag"
+              maxLength={50}
+              disabled={selectedTags.length >= MAX_TAGS}
+              className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+            <button
+              type="button"
+              onClick={handleAddCustomTag}
+              disabled={
+                !customTag.trim() || selectedTags.length >= MAX_TAGS
+              }
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Add tag
+            </button>
+          </div>
+        </section>
+
         <Button
           type="submit"
           disabled={isLoading}

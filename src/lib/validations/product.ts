@@ -14,9 +14,9 @@ export const createProductValidation = (data: unknown) => {
     tagline: Joi.string().max(255).required(),
     description: Joi.string().allow('', null).optional(),
     url: Joi.string().uri().required(),
+    tags: Joi.array().items(Joi.string().trim().max(50)).max(5).optional(),
   });
   return schema.validate(data);
-  
 };
 
 export const updateProductValidation = (data: unknown) => {
