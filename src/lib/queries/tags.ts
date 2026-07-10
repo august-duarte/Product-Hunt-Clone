@@ -44,6 +44,41 @@ export const listTagsForProduct = async (
   return tags as Tag[];
 };
 
+export const listTagsForProducts = async (
+  productIds: number[],
+): Promise<Map<number, Tag[]>> => {
+  const tagsByProductId = new Map<number, Tag[]>();
+  if (productIds.length === 0) return tagsByProductId;
+
+  const rows = await sql`
+    SELECT
+      pt.product_id,
+      t.id,
+      t.name,
+      t.slug,
+      t.created_at
+    FROM product_tags pt
+    INNER JOIN tags t ON t.id = pt.tag_id
+    WHERE pt.product_id = ANY(${productIds})
+    ORDER BY t.name ASC
+  `;
+
+  for (const row of rows) {
+    const productId = Number(row.product_id);
+    const tag: Tag = {
+      id: Number(row.id),
+      name: String(row.name),
+      slug: String(row.slug),
+      created_at: row.created_at as Date | string,
+    };
+    const existing = tagsByProductId.get(productId) ?? [];
+    existing.push(tag);
+    tagsByProductId.set(productId, existing);
+  }
+
+  return tagsByProductId;
+};
+
 export const findOrCreateTagByName = async (
   name: string,
 ): Promise<Tag | undefined> => {

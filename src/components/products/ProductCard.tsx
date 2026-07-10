@@ -11,8 +11,6 @@ type ProductCardProps = {
   product: ProductListItem;
 };
 
-const PLACEHOLDER_TAGS = ["Tag one", "Tag two", "Tag three"] as const;
-
 export function ProductCard({ rank, product }: ProductCardProps) {
   return (
     <article className="group relative flex items-center gap-4 rounded-lg px-3 py-4 transition-colors hover:bg-gray-100">
@@ -47,16 +45,18 @@ export function ProductCard({ rank, product }: ProductCardProps) {
           </span>
         </p>
         <p className="mt-1 truncate text-sm text-gray-700">{product.tagline}</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {PLACEHOLDER_TAGS.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-gray-300 bg-gray-50 px-2.5 py-0.5 text-xs text-gray-500"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        {product.tags.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {product.tags.map((tag) => (
+              <span
+                key={tag.id}
+                className="rounded-full border border-gray-300 bg-gray-50 px-2.5 py-0.5 text-xs text-gray-500"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="relative z-10 flex shrink-0 items-center gap-2">

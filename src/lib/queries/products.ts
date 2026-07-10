@@ -1,11 +1,27 @@
 import sql from '@/lib/db';
 import { buildProductLogoUrl } from '@/lib/utils/product-logo';
+import { listTagsForProduct, listTagsForProducts } from '@/lib/queries/tags';
 import type {
   Product,
   ProductDetailItem,
   ProductListItem,
   ProductWithUpvoteCount,
 } from '@/types/product';
+
+type ProductListRow = Omit<ProductListItem, 'tags'>;
+
+async function withProductTags(
+  products: ProductListRow[],
+): Promise<ProductListItem[]> {
+  const tagsByProductId = await listTagsForProducts(
+    products.map((product) => product.id),
+  );
+
+  return products.map((product) => ({
+    ...product,
+    tags: tagsByProductId.get(product.id) ?? [],
+  }));
+}
 
 export const createProduct = async (
   name: string,
@@ -59,7 +75,11 @@ export const getProductDetailBySlug = async (
     WHERE p.slug = ${slug}
     GROUP BY p.id, maker.name
   `;
-  return product as ProductDetailItem | undefined;
+
+  if (!product) return undefined;
+
+  const tags = await listTagsForProduct(Number(product.id));
+  return { ...(product as ProductListRow), tags };
 };
 
 export const getProductById = async (
@@ -144,7 +164,7 @@ export const listProducts = async (): Promise<ProductListItem[]> => {
     GROUP BY p.id, maker.name
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
-  return products as ProductListItem[];
+  return withProductTags(products as ProductListRow[]);
 };
 
 export const listProductsForToday = async (): Promise<ProductListItem[]> => {
@@ -171,7 +191,7 @@ export const listProductsForToday = async (): Promise<ProductListItem[]> => {
     GROUP BY p.id, maker.name
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
-  return products as ProductListItem[];
+  return withProductTags(products as ProductListRow[]);
 };
 
 export const listProductsByUserId = async (
@@ -199,7 +219,7 @@ export const listProductsByUserId = async (
     GROUP BY p.id, maker.name
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
-  return products as ProductListItem[];
+  return withProductTags(products as ProductListRow[]);
 };
 
 export const searchProducts = async (
@@ -235,7 +255,7 @@ export const searchProducts = async (
     GROUP BY p.id, maker.name
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
-  return products as ProductListItem[];
+  return withProductTags(products as ProductListRow[]);
 };
 
 export const listProductsByTagId = async (
@@ -264,7 +284,7 @@ export const listProductsByTagId = async (
     GROUP BY p.id, maker.name
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
-  return products as ProductListItem[];
+  return withProductTags(products as ProductListRow[]);
 };
 
 export const listProductsByTagSlug = async (
@@ -294,5 +314,5 @@ export const listProductsByTagSlug = async (
     GROUP BY p.id, maker.name
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
-  return products as ProductListItem[];
+  return withProductTags(products as ProductListRow[]);
 };

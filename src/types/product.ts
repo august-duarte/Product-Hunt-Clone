@@ -1,3 +1,5 @@
+import type { Tag } from '@/types/tag';
+
 export type Product = {
   id: number;
   name: string;
@@ -17,6 +19,7 @@ export type ProductWithUpvoteCount = Product & {
 export type ProductListItem = ProductWithUpvoteCount & {
   maker_name: string;
   comment_count: number;
+  tags: Tag[];
 };
 
 export type ProductDetailItem = ProductListItem;
