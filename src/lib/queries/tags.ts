@@ -1,4 +1,5 @@
 import sql from '@/lib/db';
+import { slugify } from '@/lib/utils/slug';
 import type { Tag } from '@/types/tag';
 
 export const findTagBySlug = async (
@@ -41,4 +42,55 @@ export const listTagsForProduct = async (
     ORDER BY t.name ASC
   `;
   return tags as Tag[];
+};
+
+export const findOrCreateTagByName = async (
+  name: string,
+): Promise<Tag | undefined> => {
+  const trimmedName = name.trim();
+  const slug = slugify(trimmedName);
+  if (!trimmedName || !slug) return undefined;
+
+  const existing = await findTagBySlug(slug);
+  if (existing) return existing;
+
+  const [tag] = await sql`
+    INSERT INTO tags (name, slug)
+    VALUES (${trimmedName}, ${slug})
+    RETURNING id, name, slug, created_at
+  `;
+  return tag as Tag | undefined;
+};
+
+export const setProductTags = async (
+  productId: number,
+  tagIds: number[],
+): Promise<void> => {
+  await sql`
+    DELETE FROM product_tags WHERE product_id = ${productId}
+  `;
+
+  for (const tagId of tagIds) {
+    await sql`
+      INSERT INTO product_tags (product_id, tag_id)
+      VALUES (${productId}, ${tagId})
+      ON CONFLICT DO NOTHING
+    `;
+  }
+};
+
+export const resolveTagIdsFromNames = async (
+  names: string[],
+): Promise<number[]> => {
+  const uniqueNames = [
+    ...new Set(names.map((name) => name.trim()).filter(Boolean)),
+  ];
+  const tagIds: number[] = [];
+
+  for (const name of uniqueNames) {
+    const tag = await findOrCreateTagByName(name);
+    if (tag) tagIds.push(tag.id);
+  }
+
+  return tagIds;
 };
