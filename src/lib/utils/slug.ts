@@ -6,10 +6,6 @@ export function slugify(value: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-export function nameToUsername(name: string): string {
-  return slugify(name);
-}
-
-export function userProfilePath(name: string): string {
-  return `/users/${nameToUsername(name)}`;
+export function userProfilePath(username: string): string {
+  return `/users/${username}`;
 }

@@ -1,10 +1,18 @@
 import sql from '@/lib/db';
-import { nameToUsername } from '@/lib/utils/slug';
 import type { PublicUser, PublicUserProfile, User } from '@/types/user';
 
 export const findUserByEmail = async (email: string): Promise<User | undefined> => {
   const [user] = await sql`
     SELECT * FROM users WHERE email = ${email}
+  `;
+  return user as User | undefined;
+};
+
+export const findUserByUsername = async (
+  username: string,
+): Promise<User | undefined> => {
+  const [user] = await sql`
+    SELECT * FROM users WHERE username = ${username}
   `;
   return user as User | undefined;
 };
@@ -19,22 +27,33 @@ export const findUserByEmailExcludingId = async (
   return users as User[];
 };
 
+export const findUserByUsernameExcludingId = async (
+  username: string,
+  id: number,
+): Promise<User[]> => {
+  const users = await sql`
+    SELECT * FROM users WHERE username = ${username} AND id != ${id}
+  `;
+  return users as User[];
+};
+
 export const createUser = async (
   name: string,
+  username: string,
   email: string,
   password: string
 ): Promise<PublicUser> => {
   const [user] = await sql`
-    INSERT INTO users (name, email, password)
-    VALUES (${name}, ${email}, ${password})
-    RETURNING id, name, email, avatar_url, created_at
+    INSERT INTO users (name, username, email, password)
+    VALUES (${name}, ${username}, ${email}, ${password})
+    RETURNING id, name, username, email, avatar_url, created_at
   `;
   return user as PublicUser;
 };
 
 export const findPublicUserById = async (id: number): Promise<PublicUser | undefined> => {
   const [user] = await sql`
-    SELECT id, name, email, avatar_url, created_at FROM users WHERE id = ${id}
+    SELECT id, name, username, email, avatar_url, created_at FROM users WHERE id = ${id}
   `;
   return user as PublicUser | undefined;
 };
@@ -46,19 +65,16 @@ export const findPublicUserProfileById = async (
     SELECT
       u.id,
       u.name,
+      u.username,
       u.avatar_url,
       u.created_at,
       COALESCE(COUNT(p.id), 0)::int AS product_count
     FROM users u
     LEFT JOIN products p ON p.user_id = u.id
     WHERE u.id = ${id}
-    GROUP BY u.id, u.name, u.avatar_url, u.created_at
+    GROUP BY u.id, u.name, u.username, u.avatar_url, u.created_at
   `;
-
-  if (!user) return undefined;
-
-  const profile = user as Omit<PublicUserProfile, 'username'>;
-  return { ...profile, username: nameToUsername(profile.name) };
+  return user as PublicUserProfile | undefined;
 };
 
 export const findPublicUserProfileByUsername = async (
@@ -68,24 +84,16 @@ export const findPublicUserProfileByUsername = async (
     SELECT
       u.id,
       u.name,
+      u.username,
       u.avatar_url,
       u.created_at,
       COALESCE(COUNT(p.id), 0)::int AS product_count
     FROM users u
     LEFT JOIN products p ON p.user_id = u.id
-    WHERE regexp_replace(
-      regexp_replace(lower(trim(u.name)), '[^a-z0-9]+', '-', 'g'),
-      '(^-+|-+$)',
-      '',
-      'g'
-    ) = ${username}
-    GROUP BY u.id, u.name, u.avatar_url, u.created_at
+    WHERE u.username = ${username}
+    GROUP BY u.id, u.name, u.username, u.avatar_url, u.created_at
   `;
-
-  if (!user) return undefined;
-
-  const profile = user as Omit<PublicUserProfile, 'username'>;
-  return { ...profile, username: nameToUsername(profile.name) };
+  return user as PublicUserProfile | undefined;
 };
 
 export const findUserById = async (id: number): Promise<User | undefined> => {
@@ -112,7 +120,7 @@ export const updateUserNameAndEmail = async (
   const [user] = await sql`
     UPDATE users SET name = ${name}, email = ${email}
     WHERE id = ${id}
-    RETURNING id, name, email, avatar_url, created_at
+    RETURNING id, name, username, email, avatar_url, created_at
   `;
   return user as PublicUser | undefined;
 };
@@ -124,7 +132,7 @@ export const updateUserName = async (
   const [user] = await sql`
     UPDATE users SET name = ${name}
     WHERE id = ${id}
-    RETURNING id, name, email, avatar_url, created_at
+    RETURNING id, name, username, email, avatar_url, created_at
   `;
   return user as PublicUser | undefined;
 };
@@ -136,7 +144,19 @@ export const updateUserEmail = async (
   const [user] = await sql`
     UPDATE users SET email = ${email}
     WHERE id = ${id}
-    RETURNING id, name, email, avatar_url, created_at
+    RETURNING id, name, username, email, avatar_url, created_at
+  `;
+  return user as PublicUser | undefined;
+};
+
+export const updateUserUsername = async (
+  id: number,
+  username: string,
+): Promise<PublicUser | undefined> => {
+  const [user] = await sql`
+    UPDATE users SET username = ${username}
+    WHERE id = ${id}
+    RETURNING id, name, username, email, avatar_url, created_at
   `;
   return user as PublicUser | undefined;
 };

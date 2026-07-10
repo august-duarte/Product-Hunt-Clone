@@ -4,15 +4,18 @@ import {
   emailAlreadyExists,
   internalServerError,
   notFound,
+  usernameAlreadyExists,
   validationError,
 } from "@/lib/api/responses";
 import { withAuth } from "@/lib/api/with-auth";
 import {
   findPublicUserById,
   findUserByEmailExcludingId,
+  findUserByUsernameExcludingId,
   updateUserEmail,
   updateUserName,
   updateUserNameAndEmail,
+  updateUserUsername,
 } from "@/lib/queries/users";
 import type { PublicUser, UpdateProfileInput } from "@/types/user";
 
@@ -23,7 +26,7 @@ export const GET = withAuth(async (_req, { id }) => {
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error('Get profile failed', error);
+    console.error("Get profile failed", error);
     return internalServerError();
   }
 });
@@ -36,7 +39,7 @@ export const PATCH = withAuth(async (req, { id }) => {
       return validationError(error.details[0].message);
     }
 
-    const { name, email } = value as UpdateProfileInput;
+    const { name, email, username } = value as UpdateProfileInput;
 
     if (email) {
       const emailExists = await findUserByEmailExcludingId(email, id);
@@ -45,7 +48,15 @@ export const PATCH = withAuth(async (req, { id }) => {
       }
     }
 
-    let user: PublicUser | undefined;
+    if (username) {
+      const usernameExists = await findUserByUsernameExcludingId(username, id);
+      if (usernameExists.length > 0) {
+        return usernameAlreadyExists();
+      }
+    }
+
+    let user: PublicUser | undefined = await findPublicUserById(id);
+    if (!user) return notFound();
 
     if (name && email) {
       user = await updateUserNameAndEmail(id, name, email);
@@ -55,10 +66,14 @@ export const PATCH = withAuth(async (req, { id }) => {
       user = await updateUserEmail(id, email);
     }
 
+    if (username) {
+      user = await updateUserUsername(id, username);
+    }
+
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    console.error('Information update failed', error);
+    console.error("Information update failed", error);
     return internalServerError();
   }
 });

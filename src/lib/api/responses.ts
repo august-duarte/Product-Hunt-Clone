@@ -6,6 +6,7 @@ export const ApiErrors = {
   USER_NOT_FOUND: 'User not found',
   PRODUCT_NOT_FOUND: 'Product not found',
   EMAIL_ALREADY_EXISTS: 'Email already exists',
+  USERNAME_ALREADY_EXISTS: 'Username already exists',
   INVALID_USER_ID: 'Invalid user id',
   INVALID_PRODUCT_ID: 'Invalid product id',
   NOT_ALLOWED: 'Not allowed',
@@ -34,6 +35,9 @@ export const validationError = (message: string) => errorResponse(message, 400);
 
 export const emailAlreadyExists = () =>
   errorResponse(ApiErrors.EMAIL_ALREADY_EXISTS, 400);
+
+export const usernameAlreadyExists = () =>
+  errorResponse(ApiErrors.USERNAME_ALREADY_EXISTS, 400);
 
 export const invalidUserId = () => errorResponse(ApiErrors.INVALID_USER_ID, 400);
 

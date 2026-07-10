@@ -28,5 +28,5 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  redirect(userProfilePath(user.name));
+  redirect(userProfilePath(user.username));
 }

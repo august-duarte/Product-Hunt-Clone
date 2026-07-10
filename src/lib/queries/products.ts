@@ -66,6 +66,7 @@ export const getProductDetailBySlug = async (
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
+      maker.username AS maker_username,
       COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
       COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
@@ -73,7 +74,7 @@ export const getProductDetailBySlug = async (
     LEFT JOIN upvotes uv ON uv.product_id = p.id
     LEFT JOIN comments c ON c.product_id = p.id
     WHERE p.slug = ${slug}
-    GROUP BY p.id, maker.name
+    GROUP BY p.id, maker.name, maker.username
   `;
 
   if (!product) return undefined;
@@ -155,13 +156,14 @@ export const listProducts = async (): Promise<ProductListItem[]> => {
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
+      maker.username AS maker_username,
       COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
       COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
     LEFT JOIN users maker ON maker.id = p.user_id
     LEFT JOIN upvotes uv ON uv.product_id = p.id
     LEFT JOIN comments c ON c.product_id = p.id
-    GROUP BY p.id, maker.name
+    GROUP BY p.id, maker.name, maker.username
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return withProductTags(products as ProductListRow[]);
@@ -180,6 +182,7 @@ export const listProductsForToday = async (): Promise<ProductListItem[]> => {
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
+      maker.username AS maker_username,
       COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
       COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
@@ -188,7 +191,7 @@ export const listProductsForToday = async (): Promise<ProductListItem[]> => {
     LEFT JOIN comments c ON c.product_id = p.id
     WHERE p.created_at >= CURRENT_DATE
       AND p.created_at < CURRENT_DATE + INTERVAL '1 day'
-    GROUP BY p.id, maker.name
+    GROUP BY p.id, maker.name, maker.username
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return withProductTags(products as ProductListRow[]);
@@ -209,6 +212,7 @@ export const listProductsByUserId = async (
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
+      maker.username AS maker_username,
       COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
       COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
@@ -216,7 +220,7 @@ export const listProductsByUserId = async (
     LEFT JOIN upvotes uv ON uv.product_id = p.id
     LEFT JOIN comments c ON c.product_id = p.id
     WHERE p.user_id = ${userId}
-    GROUP BY p.id, maker.name
+    GROUP BY p.id, maker.name, maker.username
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return withProductTags(products as ProductListRow[]);
@@ -241,6 +245,7 @@ export const searchProducts = async (
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
+      maker.username AS maker_username,
       COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
       COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
@@ -252,7 +257,7 @@ export const searchProducts = async (
       OR p.tagline ILIKE ${pattern}
       OR p.description ILIKE ${pattern}
       OR maker.name ILIKE ${pattern}
-    GROUP BY p.id, maker.name
+    GROUP BY p.id, maker.name, maker.username
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return withProductTags(products as ProductListRow[]);
@@ -273,6 +278,7 @@ export const listProductsByTagId = async (
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
+      maker.username AS maker_username,
       COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
       COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
@@ -281,7 +287,7 @@ export const listProductsByTagId = async (
     LEFT JOIN upvotes uv ON uv.product_id = p.id
     LEFT JOIN comments c ON c.product_id = p.id
     WHERE pt.tag_id = ${tagId}
-    GROUP BY p.id, maker.name
+    GROUP BY p.id, maker.name, maker.username
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return withProductTags(products as ProductListRow[]);
@@ -302,6 +308,7 @@ export const listProductsByTagSlug = async (
       p.user_id,
       p.created_at,
       maker.name AS maker_name,
+      maker.username AS maker_username,
       COALESCE(COUNT(DISTINCT uv.id), 0)::int AS upvote_count,
       COALESCE(COUNT(DISTINCT c.id), 0)::int AS comment_count
     FROM products p
@@ -311,7 +318,7 @@ export const listProductsByTagSlug = async (
     LEFT JOIN upvotes uv ON uv.product_id = p.id
     LEFT JOIN comments c ON c.product_id = p.id
     WHERE t.slug = ${tagSlug}
-    GROUP BY p.id, maker.name
+    GROUP BY p.id, maker.name, maker.username
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
   return withProductTags(products as ProductListRow[]);

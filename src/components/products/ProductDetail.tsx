@@ -40,7 +40,7 @@ export function ProductDetail({ product, comments }: ProductDetailProps) {
               <p className="mt-2 text-sm text-gray-500">
                 Launched by{" "}
                 <Link
-                  href={userProfilePath(product.maker_name)}
+                  href={userProfilePath(product.maker_username)}
                   className="text-gray-700 hover:text-orange-500"
                 >
                   {product.maker_name}

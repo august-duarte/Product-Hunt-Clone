@@ -34,7 +34,7 @@ export function ProductCard({ rank, product }: ProductCardProps) {
           <span className="font-normal text-gray-500">
             by{" "}
             <Link
-              href={userProfilePath(product.maker_name)}
+              href={userProfilePath(product.maker_username)}
               onClick={(event) => {
                 event.stopPropagation();
               }}

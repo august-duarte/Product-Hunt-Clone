@@ -18,6 +18,7 @@ export type ProductWithUpvoteCount = Product & {
 
 export type ProductListItem = ProductWithUpvoteCount & {
   maker_name: string;
+  maker_username: string;
   comment_count: number;
   tags: Tag[];
 };

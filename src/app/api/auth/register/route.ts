@@ -6,9 +6,14 @@ import { attachAuthCookie } from "@/lib/auth/cookies";
 import {
   emailAlreadyExists,
   internalServerError,
+  usernameAlreadyExists,
   validationError,
 } from "@/lib/api/responses";
-import { createUser, findUserByEmail } from "@/lib/queries/users";
+import {
+  createUser,
+  findUserByEmail,
+  findUserByUsername,
+} from "@/lib/queries/users";
 import type { RegisterInput } from "@/types/user";
 
 export const POST = async (req: Request) => {
@@ -19,7 +24,7 @@ export const POST = async (req: Request) => {
       return validationError(error.details[0].message);
     }
 
-    const { name, email, password } = value as RegisterInput;
+    const { name, username, email, password } = value as RegisterInput;
 
     const hashedPassword = await hashPassword(password);
 
@@ -27,12 +32,16 @@ export const POST = async (req: Request) => {
       return emailAlreadyExists();
     }
 
-    const user = await createUser(name, email, hashedPassword);
+    if (await findUserByUsername(username)) {
+      return usernameAlreadyExists();
+    }
+
+    const user = await createUser(name, username, email, hashedPassword);
     const token = createToken(String(user.id));
 
     return attachAuthCookie(NextResponse.json({ user }, { status: 201 }), token);
   } catch (error) {
-    console.error('Register failed', error);
+    console.error("Register failed", error);
     return internalServerError();
   }
 };

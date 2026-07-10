@@ -26,6 +26,7 @@ export function UserProfile({ user, products }: UserProfileProps) {
         />
         <div className="mt-4 sm:mt-0 sm:ml-6">
           <h1 className="text-2xl font-semibold text-gray-900">{user.name}</h1>
+          <p className="mt-1 text-sm text-gray-500">@{user.username}</p>
           <p className="mt-1 text-sm text-gray-500">
             Member since {formatDate(user.created_at)}
           </p>

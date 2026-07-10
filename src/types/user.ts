@@ -1,6 +1,7 @@
 export type User = {
   id: number;
   name: string;
+  username: string;
   email: string;
   password: string;
   avatar_url?: string | null;
@@ -11,6 +12,7 @@ export type User = {
 export type PublicUser = {
   id: number;
   name: string;
+  username: string;
   email: string;
   avatar_url: string | null;
   created_at: Date | string;
@@ -31,6 +33,7 @@ export type AuthPayload = {
 
 export type RegisterInput = {
   name: string;
+  username: string;
   email: string;
   password: string;
 };
@@ -43,6 +46,7 @@ export type LoginInput = {
 export type UpdateProfileInput = {
   name?: string;
   email?: string;
+  username?: string;
 };
 
 export type UpdatePasswordInput = {

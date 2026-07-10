@@ -7,6 +7,7 @@ import { useUserAuth } from "@/hooks/user-auth";
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ export default function RegisterForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, username, email, password }),
       });
 
       if (response.ok) {
@@ -58,6 +59,15 @@ export default function RegisterForm() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <Input
+          placeholder="Username"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value.toLowerCase())}
+          pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          title="Lowercase letters, numbers, and hyphens only"
           required
         />
         <Input
