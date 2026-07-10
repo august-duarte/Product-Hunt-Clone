@@ -161,6 +161,28 @@ export const updateUserUsername = async (
   return user as PublicUser | undefined;
 };
 
+export const updateUserProfile = async (
+  id: number,
+  updates: {
+    name: string;
+    username: string;
+    email: string;
+    avatar_url: string | null;
+  },
+): Promise<PublicUser | undefined> => {
+  const [user] = await sql`
+    UPDATE users
+    SET
+      name = ${updates.name},
+      username = ${updates.username},
+      email = ${updates.email},
+      avatar_url = ${updates.avatar_url}
+    WHERE id = ${id}
+    RETURNING id, name, username, email, avatar_url, created_at
+  `;
+  return user as PublicUser | undefined;
+};
+
 export const updateUserPassword = async (id: number, password: string): Promise<void> => {
   await sql`
     UPDATE users SET password = ${password}

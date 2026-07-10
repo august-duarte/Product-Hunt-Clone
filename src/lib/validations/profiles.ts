@@ -20,6 +20,7 @@ export const updateProfileValidation = (data: unknown) => {
         'string.pattern.base':
           'Username must contain only lowercase letters, numbers, and hyphens',
       }),
-  }).or('name', 'email', 'username');
+    avatar_url: Joi.string().uri().allow('', null),
+  }).or('name', 'email', 'username', 'avatar_url');
   return schema.validate(data);
 };

@@ -47,6 +47,7 @@ export type UpdateProfileInput = {
   name?: string;
   email?: string;
   username?: string;
+  avatar_url?: string | null;
 };
 
 export type UpdatePasswordInput = {

@@ -12,12 +12,9 @@ import {
   findPublicUserById,
   findUserByEmailExcludingId,
   findUserByUsernameExcludingId,
-  updateUserEmail,
-  updateUserName,
-  updateUserNameAndEmail,
-  updateUserUsername,
+  updateUserProfile,
 } from "@/lib/queries/users";
-import type { PublicUser, UpdateProfileInput } from "@/types/user";
+import type { UpdateProfileInput } from "@/types/user";
 
 export const GET = withAuth(async (_req, { id }) => {
   try {
@@ -39,36 +36,40 @@ export const PATCH = withAuth(async (req, { id }) => {
       return validationError(error.details[0].message);
     }
 
-    const { name, email, username } = value as UpdateProfileInput;
+    const updates = value as UpdateProfileInput;
+    const existing = await findPublicUserById(id);
+    if (!existing) return notFound();
 
-    if (email) {
+    const name = updates.name ?? existing.name;
+    const username = updates.username ?? existing.username;
+    const email = updates.email ?? existing.email;
+    const avatar_url =
+      updates.avatar_url === undefined
+        ? existing.avatar_url
+        : updates.avatar_url === ""
+          ? null
+          : updates.avatar_url;
+
+    if (email !== existing.email) {
       const emailExists = await findUserByEmailExcludingId(email, id);
       if (emailExists.length > 0) {
         return emailAlreadyExists();
       }
     }
 
-    if (username) {
+    if (username !== existing.username) {
       const usernameExists = await findUserByUsernameExcludingId(username, id);
       if (usernameExists.length > 0) {
         return usernameAlreadyExists();
       }
     }
 
-    let user: PublicUser | undefined = await findPublicUserById(id);
-    if (!user) return notFound();
-
-    if (name && email) {
-      user = await updateUserNameAndEmail(id, name, email);
-    } else if (name) {
-      user = await updateUserName(id, name);
-    } else if (email) {
-      user = await updateUserEmail(id, email);
-    }
-
-    if (username) {
-      user = await updateUserUsername(id, username);
-    }
+    const user = await updateUserProfile(id, {
+      name,
+      username,
+      email,
+      avatar_url,
+    });
 
     if (!user) return notFound();
     return NextResponse.json({ user }, { status: 200 });
