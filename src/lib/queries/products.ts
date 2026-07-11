@@ -295,6 +295,7 @@ export const listProductsByTagId = async (
 
 export const listProductsByTagSlug = async (
   tagSlug: string,
+  todayOnly = false,
 ): Promise<ProductListItem[]> => {
   const products = await sql`
     SELECT
@@ -318,6 +319,11 @@ export const listProductsByTagSlug = async (
     LEFT JOIN upvotes uv ON uv.product_id = p.id
     LEFT JOIN comments c ON c.product_id = p.id
     WHERE t.slug = ${tagSlug}
+      ${
+        todayOnly
+          ? sql`AND p.created_at >= CURRENT_DATE AND p.created_at < CURRENT_DATE + INTERVAL '1 day'`
+          : sql``
+      }
     GROUP BY p.id, maker.name, maker.username
     ORDER BY upvote_count DESC, p.created_at DESC
   `;
