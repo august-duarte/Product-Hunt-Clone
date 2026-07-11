@@ -3,11 +3,17 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { BestProductsMenu } from "@/components/layout/BestProductsMenu";
 import { HeaderSearchBar } from "@/components/layout/HeaderSearchBar";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { contentWidthClass } from "@/components/layout/ContentContainer";
+import type { Tag } from "@/types/tag";
 
-export function Header() {
+type HeaderProps = {
+  popularTags?: Tag[];
+};
+
+export function Header({ popularTags = [] }: HeaderProps) {
   return (
     <header
       className={`sticky top-0 z-50 flex min-h-[4.5rem] items-center gap-4 border-b border-gray-300 bg-white px-6 py-4 ${contentWidthClass}`}
@@ -20,13 +26,19 @@ export function Header() {
         P
       </Link>
 
-      <div className="flex min-w-0 flex-1 justify-center px-2">
+      <div className="w-full max-w-md shrink-0 px-2">
         <Suspense
           fallback={
-            <div className="h-9 w-full max-w-md rounded-full border border-gray-300 bg-gray-50" />
+            <div className="h-9 w-full rounded-full border border-gray-300 bg-gray-50" />
           }
         >
           <HeaderSearchBar />
+        </Suspense>
+      </div>
+
+      <div className="flex min-w-0 flex-1 justify-center">
+        <Suspense fallback={null}>
+          <BestProductsMenu popularTags={popularTags} />
         </Suspense>
       </div>
 

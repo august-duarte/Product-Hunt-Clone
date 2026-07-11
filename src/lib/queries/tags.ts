@@ -31,6 +31,18 @@ export const listTags = async (): Promise<Tag[]> => {
   return tags as Tag[];
 };
 
+export const listPopularTags = async (limit = 10): Promise<Tag[]> => {
+  const tags = await sql`
+    SELECT t.id, t.name, t.slug, t.created_at
+    FROM tags t
+    INNER JOIN product_tags pt ON pt.tag_id = t.id
+    GROUP BY t.id
+    ORDER BY COUNT(pt.product_id) DESC, t.name ASC
+    LIMIT ${limit}
+  `;
+  return tags as Tag[];
+};
+
 export const listTagsForProduct = async (
   productId: number,
 ): Promise<Tag[]> => {

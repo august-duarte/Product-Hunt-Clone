@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { ContentContainer } from "@/components/layout/ContentContainer";
 import { ThemeProvider } from "@/hooks/theme";
 import { UserAuthProvider } from "@/hooks/user-auth";
+import { listPopularTags } from "@/lib/queries/tags";
 import Script from "next/script";
 import "./globals.css";
 
@@ -24,11 +25,13 @@ const themeInitScript = `
 })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const popularTags = await listPopularTags();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -37,7 +40,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <UserAuthProvider>
-            <Header />
+            <Header popularTags={popularTags} />
             <Script
               src="https://cdn.tailwindcss.com"
               strategy="beforeInteractive"
