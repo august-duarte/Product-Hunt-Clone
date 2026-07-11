@@ -26,6 +26,7 @@ export const updateProductValidation = (data: unknown) => {
     tagline: Joi.string().max(255),
     description: Joi.string().allow('', null),
     url: Joi.string().uri(),
-  }).or('name', 'slug', 'tagline', 'description', 'url');
+    tags: Joi.array().items(Joi.string().trim().max(50)).max(5).optional(),
+  }).or('name', 'slug', 'tagline', 'description', 'url', 'tags');
   return schema.validate(data);
 };

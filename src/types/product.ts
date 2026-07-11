@@ -32,4 +32,5 @@ export type UpdateProductInput = {
   description?: string | null;
   url?: string;
   logo_url?: string | null;
+  tags?: string[];
 };

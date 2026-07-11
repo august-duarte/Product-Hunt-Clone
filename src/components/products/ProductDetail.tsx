@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CommentForm } from "@/components/comments/CommentForm";
 import { CommentList } from "@/components/comments/CommentList";
 import { ProductLogo } from "@/components/products/ProductLogo";
+import { ProductOwnerActions } from "@/components/products/ProductOwnerActions";
 import { UpvoteButton } from "@/components/products/UpvoteButton";
 import { userProfilePath } from "@/lib/utils/slug";
 import type { CommentWithUser } from "@/types/comment";
@@ -59,20 +60,27 @@ export function ProductDetail({ product, comments }: ProductDetailProps) {
           )}
 
           <div className="mt-6 flex flex-wrap gap-2">
-            <span className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-500">
-              Product
-            </span>
-            <span className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-500">
-              Launch
-            </span>
-            <span className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-500">
-              Community
-            </span>
+            {product.tags.length > 0 ? (
+              product.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="rounded-full border border-gray-300 bg-gray-50 px-3 py-1 text-xs text-gray-500"
+                >
+                  {tag.name}
+                </span>
+              ))
+            ) : (
+              <span className="text-sm text-gray-500">No tags yet.</span>
+            )}
           </div>
         </div>
 
         <aside className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
           <UpvoteButton productId={product.id} count={product.upvote_count} />
+          <ProductOwnerActions
+            productSlug={product.slug}
+            ownerId={product.user_id}
+          />
           <Link
             href={product.url}
             target="_blank"

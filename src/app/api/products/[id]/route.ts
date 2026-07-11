@@ -13,6 +13,10 @@ import {
   getProductBySlug,
   updateProduct,
 } from '@/lib/queries/products';
+import {
+  resolveTagIdsFromNames,
+  setProductTags,
+} from '@/lib/queries/tags';
 import { updateProductValidation } from '@/lib/validations/product';
 import type { UpdateProductInput } from '@/types/product';
 
@@ -101,6 +105,12 @@ export const PATCH = withAuthParams<{ id: string }>(async (
     );
 
     if (!product) return productNotFound();
+
+    if (updates.tags !== undefined) {
+      const tagIds = await resolveTagIdsFromNames(updates.tags);
+      await setProductTags(productId, tagIds);
+    }
+
     return NextResponse.json({ product }, { status: 200 });
   } catch (error) {
     console.error('Update product failed', error);
