@@ -60,21 +60,24 @@ export function ProductCard({ rank, product }: ProductCardProps) {
       </div>
 
       <div className="relative z-10 flex shrink-0 items-center gap-2">
-        <button
-          type="button"
+        <Link
+          href={`/products/${product.slug}#comments`}
           onClick={(event) => {
-            event.preventDefault();
             event.stopPropagation();
           }}
           aria-label={`${product.comment_count} comments`}
-          className="flex min-w-14 flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 opacity-70"
+          className="relative z-20 flex min-w-14 flex-col items-center justify-center rounded-lg border-2 border-gray-300 bg-white px-3 py-2 text-gray-900 hover:bg-gray-50"
         >
           <span className="text-sm leading-none">💬</span>
           <span className="mt-1 text-sm font-semibold">
             {product.comment_count}
           </span>
-        </button>
-        <UpvoteButton productId={product.id} count={product.upvote_count} />
+        </Link>
+        <UpvoteButton
+          productId={product.id}
+          count={product.upvote_count}
+          initialUpvoted={product.user_has_upvoted}
+        />
       </div>
     </article>
   );

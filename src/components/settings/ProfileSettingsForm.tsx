@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useUserAuth } from "@/hooks/user-auth";
 
-const longInputClassName = "!m-2 !w-full";
-
 export function ProfileSettingsForm() {
   const { user, refreshUser } = useUserAuth();
   const [name, setName] = useState("");
@@ -82,7 +80,6 @@ export function ProfileSettingsForm() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className={longInputClassName}
           required
         />
 
@@ -95,7 +92,6 @@ export function ProfileSettingsForm() {
           onChange={(e) => setUsername(e.target.value.toLowerCase())}
           pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
           title="Lowercase letters, numbers, and hyphens only"
-          className={longInputClassName}
           required
         />
 
@@ -104,7 +100,6 @@ export function ProfileSettingsForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={longInputClassName}
           required
         />
 
@@ -116,7 +111,6 @@ export function ProfileSettingsForm() {
           value={avatarUrl}
           onChange={(e) => setAvatarUrl(e.target.value)}
           placeholder="https://..."
-          className={longInputClassName}
         />
 
         {errorMessage && (

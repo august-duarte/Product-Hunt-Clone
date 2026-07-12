@@ -10,7 +10,6 @@ import type { Tag } from "@/types/tag";
 const fieldStyles =
   "m-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-500 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100";
 
-const longInputClassName = "!m-2 !w-full";
 const MAX_TAGS = 5;
 
 type EditProductFormProps = {
@@ -126,7 +125,6 @@ export function EditProductForm({ product }: EditProductFormProps) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className={longInputClassName}
           required
         />
         <Input
@@ -134,7 +132,6 @@ export function EditProductForm({ product }: EditProductFormProps) {
           type="text"
           value={tagline}
           onChange={(e) => setTagline(e.target.value)}
-          className={longInputClassName}
           required
         />
         <textarea
@@ -148,7 +145,6 @@ export function EditProductForm({ product }: EditProductFormProps) {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className={longInputClassName}
           required
         />
 

@@ -10,7 +10,6 @@ import type { Tag } from "@/types/tag";
 const fieldStyles =
   "m-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-500 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-100";
 
-const longInputClassName = "!m-2 !w-full";
 const MAX_TAGS = 5;
 
 export default function SubmitProductForm() {
@@ -18,6 +17,7 @@ export default function SubmitProductForm() {
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [customTag, setCustomTag] = useState("");
@@ -94,6 +94,7 @@ export default function SubmitProductForm() {
           tagline,
           description: description || null,
           url,
+          logo_url: logoUrl.trim() || null,
           tags: selectedTags,
         }),
       });
@@ -131,7 +132,6 @@ export default function SubmitProductForm() {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className={longInputClassName}
           required
         />
         <Input
@@ -139,7 +139,6 @@ export default function SubmitProductForm() {
           type="text"
           value={tagline}
           onChange={(e) => setTagline(e.target.value)}
-          className={longInputClassName}
           required
         />
         <textarea
@@ -153,8 +152,13 @@ export default function SubmitProductForm() {
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className={longInputClassName}
           required
+        />
+        <Input
+          placeholder="Logo URL (optional)"
+          type="url"
+          value={logoUrl}
+          onChange={(e) => setLogoUrl(e.target.value)}
         />
 
         <section className="m-2 mt-4">

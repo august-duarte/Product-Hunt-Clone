@@ -4,8 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
-const longInputClassName = "!m-2 !w-full";
-
 export function PasswordSettingsForm() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -77,7 +75,6 @@ export function PasswordSettingsForm() {
           type="password"
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
-          className={longInputClassName}
           required
           minLength={6}
         />
@@ -89,7 +86,6 @@ export function PasswordSettingsForm() {
           type="password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className={longInputClassName}
           required
           minLength={6}
         />
@@ -101,7 +97,6 @@ export function PasswordSettingsForm() {
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className={longInputClassName}
           required
           minLength={6}
         />
