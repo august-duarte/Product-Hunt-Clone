@@ -21,6 +21,7 @@ export function ProductPeriodToggle({ period }: ProductPeriodToggleProps) {
     } else {
       params.delete("period");
     }
+    params.delete("page");
 
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname);

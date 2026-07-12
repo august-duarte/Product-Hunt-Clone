@@ -21,6 +21,20 @@ export type ProductListItem = ProductWithUpvoteCount & {
   maker_username: string;
   comment_count: number;
   tags: Tag[];
+  user_has_upvoted: boolean;
+};
+
+export type PaginationOptions = {
+  page?: number;
+  pageSize?: number;
+};
+
+export type PaginatedProducts = {
+  products: ProductListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 };
 
 export type ProductDetailItem = ProductListItem;

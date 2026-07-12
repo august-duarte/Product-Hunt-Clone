@@ -1,8 +1,18 @@
+import { Pagination, parsePageParam, withPageParam } from "@/components/products/Pagination";
 import { ProductList } from "@/components/products/ProductList";
-import { listProducts } from "@/lib/queries/products";
+import { getCurrentUserId } from "@/lib/auth/get-current-user-id";
+import { listProducts, withUserUpvoteState } from "@/lib/queries/products";
 
-export default async function ProductsPage() {
-  const products = await listProducts();
+type ProductsPageProps = {
+  searchParams: Promise<{ page?: string }>;
+};
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const params = await searchParams;
+  const page = parsePageParam(params.page);
+  const userId = await getCurrentUserId();
+  const result = await listProducts({ page });
+  const products = await withUserUpvoteState(result.products, userId);
 
   return (
     <main className="py-8">
@@ -12,6 +22,11 @@ export default async function ProductsPage() {
       <ProductList
         products={products}
         emptyMessage="No products have been submitted yet."
+      />
+      <Pagination
+        page={result.page}
+        totalPages={result.totalPages}
+        hrefForPage={(nextPage) => withPageParam("/products", nextPage)}
       />
     </main>
   );

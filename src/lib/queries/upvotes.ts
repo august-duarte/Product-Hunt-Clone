@@ -19,6 +19,22 @@ export const hasUserUpvoted = async (
   return Boolean(upvote);
 };
 
+export const getUpvotedProductIds = async (
+  userId: number,
+  productIds: number[],
+): Promise<Set<number>> => {
+  if (productIds.length === 0) return new Set();
+
+  const rows = await sql`
+    SELECT product_id
+    FROM upvotes
+    WHERE user_id = ${userId}
+      AND product_id = ANY(${productIds})
+  `;
+
+  return new Set(rows.map((row) => Number(row.product_id)));
+};
+
 export const getUpvoteCount = async (productId: number): Promise<number> => {
   const [result] = await sql`
     SELECT COUNT(*)::int AS upvote_count

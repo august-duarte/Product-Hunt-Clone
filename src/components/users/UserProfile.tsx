@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { ProductList } from "@/components/products/ProductList";
 import type { ProductListItem } from "@/types/product";
@@ -6,6 +7,7 @@ import type { PublicUserProfile } from "@/types/user";
 type UserProfileProps = {
   user: PublicUserProfile;
   products: ProductListItem[];
+  pagination?: ReactNode;
 };
 
 function formatDate(value: Date | string): string {
@@ -15,7 +17,7 @@ function formatDate(value: Date | string): string {
   });
 }
 
-export function UserProfile({ user, products }: UserProfileProps) {
+export function UserProfile({ user, products, pagination }: UserProfileProps) {
   return (
     <main className="py-8">
       <section className="mb-8 flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left">
@@ -43,6 +45,7 @@ export function UserProfile({ user, products }: UserProfileProps) {
           products={products}
           emptyMessage={`${user.name} has not launched any products yet.`}
         />
+        {pagination}
       </section>
     </main>
   );

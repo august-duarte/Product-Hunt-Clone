@@ -7,6 +7,7 @@ import { useUserAuth } from "@/hooks/user-auth";
 type UseUpvoteOptions = {
   productId: number;
   initialCount?: number;
+  initialUpvoted?: boolean;
 };
 
 type ToggleUpvoteResponse = {
@@ -14,9 +15,13 @@ type ToggleUpvoteResponse = {
   upvote_count: number;
 };
 
-export function useUpvote({ productId, initialCount = 0 }: UseUpvoteOptions) {
+export function useUpvote({
+  productId,
+  initialCount = 0,
+  initialUpvoted = false,
+}: UseUpvoteOptions) {
   const [upvoteCount, setUpvoteCount] = useState(initialCount);
-  const [upvoted, setUpvoted] = useState(false);
+  const [upvoted, setUpvoted] = useState(initialUpvoted);
   const [isLoading, setIsLoading] = useState(false);
   const { user, loading: authLoading } = useUserAuth();
   const router = useRouter();

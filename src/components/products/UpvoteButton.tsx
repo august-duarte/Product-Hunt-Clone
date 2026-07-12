@@ -5,12 +5,18 @@ import { useUpvote } from "@/hooks/use-upvote";
 type UpvoteButtonProps = {
   productId: number;
   count?: number;
+  initialUpvoted?: boolean;
 };
 
-export function UpvoteButton({ productId, count = 0 }: UpvoteButtonProps) {
+export function UpvoteButton({
+  productId,
+  count = 0,
+  initialUpvoted = false,
+}: UpvoteButtonProps) {
   const { upvoteCount, upvoted, loading, toggleUpvote } = useUpvote({
     productId,
     initialCount: count,
+    initialUpvoted,
   });
 
   const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {

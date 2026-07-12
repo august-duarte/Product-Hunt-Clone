@@ -76,7 +76,11 @@ export function ProductDetail({ product, comments }: ProductDetailProps) {
         </div>
 
         <aside className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
-          <UpvoteButton productId={product.id} count={product.upvote_count} />
+          <UpvoteButton
+            productId={product.id}
+            count={product.upvote_count}
+            initialUpvoted={product.user_has_upvoted}
+          />
           <ProductOwnerActions
             productSlug={product.slug}
             ownerId={product.user_id}
@@ -106,7 +110,7 @@ export function ProductDetail({ product, comments }: ProductDetailProps) {
         </aside>
       </section>
 
-      <section className="mt-12 max-w-2xl">
+      <section id="comments" className="mt-12 max-w-2xl scroll-mt-24">
         <h2 className="mb-4 text-xl font-semibold text-gray-900">Comments</h2>
         <div className="mb-6">
           <CommentForm productId={product.id} />

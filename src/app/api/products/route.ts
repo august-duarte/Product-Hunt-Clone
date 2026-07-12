@@ -21,12 +21,22 @@ export const GET = async (req: Request) => {
   try {
     const { searchParams } = new URL(req.url);
     const todayOnly = searchParams.get('today') === 'true';
+    const page = Number(searchParams.get('page') ?? '1');
 
-    const products = todayOnly
-      ? await listProductsForToday()
-      : await listProducts();
+    const result = todayOnly
+      ? await listProductsForToday({ page })
+      : await listProducts({ page });
 
-    return NextResponse.json({ products }, { status: 200 });
+    return NextResponse.json(
+      {
+        products: result.products,
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+        totalPages: result.totalPages,
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error('List products failed', error);
     return internalServerError();
@@ -47,6 +57,7 @@ export const POST = withAuth(async (req, { id: userId }) => {
       url,
       slug: providedSlug,
       description,
+      logo_url,
       tags = [],
     } = value as {
       name: string;
@@ -54,6 +65,7 @@ export const POST = withAuth(async (req, { id: userId }) => {
       url: string;
       slug?: string;
       description?: string | null;
+      logo_url?: string | null;
       tags?: string[];
     };
 
@@ -69,6 +81,8 @@ export const POST = withAuth(async (req, { id: userId }) => {
 
     const normalizedDescription =
       description === '' || description === undefined ? null : description;
+    const normalizedLogoUrl =
+      logo_url === '' || logo_url === undefined ? null : logo_url;
 
     const product = await createProduct(
       name,
@@ -77,6 +91,7 @@ export const POST = withAuth(async (req, { id: userId }) => {
       normalizedDescription,
       url,
       userId,
+      normalizedLogoUrl,
     );
 
     if (tags.length > 0) {
